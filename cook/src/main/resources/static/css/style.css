@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #fffaf3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo {
+    margin-top: 40px;
+}
+
+.container {
+    width: 300px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 30px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: none;
+    border-bottom: 2px solid #d9534f;
+    background: none;
+    font-size: 14px;
+    outline: none;
+}
+
+.checkbox {
+    text-align: left;
+    margin: 8px 0 20px 0;
+    font-size: 12px;
+}
+
+button.login-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #1a1aff;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.signup-link {
+    font-size: 12px;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.sns-login {
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.sns-icons img {
+    width: 36px;
+    height: 36px;
+    margin: 0 8px;
+    cursor: pointer;
+}
