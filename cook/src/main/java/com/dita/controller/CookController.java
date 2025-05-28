@@ -35,4 +35,9 @@ public class CookController {
     public String loginForm() {
         return "login"; // templates/login.html
     }
+    
+    @GetMapping("/registration")
+    public String index() {
+        return "registration"; // templates/registration.html 을 찾아 렌더링
+    }    
 }

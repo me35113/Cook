@@ -1,0 +1,1103 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+
+<title>레시피 등록</title>
+<style>
+* {
+font-family: "Gowun Dodum", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 100px; /* top.jsp의 높이만큼 여백 추가 */
+    overflow-x: hidden;
+}
+
+.wrapper {
+    flex: 1;
+    display: flex;
+    width: 100%;
+}
+
+.container {
+    display: flex;
+    width: 100%;       
+    min-height: 250vh; /* 본문 높이를 늘려 스크롤 가능하게 설정 */
+}
+
+.panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 레시피 등록 폼 스타일 */
+.recipe-form {
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-left: 50px;
+}
+
+.form-header {
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    padding-top: 50px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.form-label {
+    width: 100px;
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 50px;
+}
+
+.form-input {
+    flex: 1;
+    margin-top: 46px;
+    margin-left: 30px;
+    align-items: center;
+}
+
+.text-input {
+    width: 60%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    margin-left: 20px;
+    /*margin-bottom: 100px;*/
+    font-size: 16px;
+}
+
+.textarea-input {
+    width: 60%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    resize: none;
+    height: 100px;
+    border-radius: 10px;
+    margin-left: 20px;
+    font-size: 16px;
+}
+
+.image-upload {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.image-preview {
+    width: 150px;
+    height: 150px;
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+}
+
+.image-text {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.video-upload {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.video-input {
+    width: 60%;
+    padding: 10px;
+    height: 100px;
+    resize: none;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    margin-left: 20px;
+    font-size: 16px;
+}
+
+.video-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    margin-left: 30px;
+    
+    height: 118px;
+}
+
+.video-button {
+    position: relative;
+    padding: 9px 15px;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    width: 100%;
+    height: 100%;
+    margin-left: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.video-preview-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.material-icons {
+    font-size: 24px;
+    color: #999;
+}
+
+.category-section {
+    display: flex;
+    margin-top: 10px;
+}
+
+.category-column {
+    flex: 1;
+    margin-right: 10px;
+    margin-left: 20px;
+}
+
+.category-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+	font-size: 18px;
+}
+
+.category-items {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.category-item {
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.cooking-info-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    width: 120px;
+    text-align: center;
+}
+
+.info-title {
+    font-weight: bold;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.info-input-container {
+    display: flex;
+    justify-content: center;
+}
+
+.info-input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    text-align: center;
+    border-radius: 3px;
+}
+
+.horizontal-layout {
+    display: flex;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.label-column {
+    width: 120px;
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 20px;
+}
+
+.content-column {
+    flex: 1;
+    margin-left: 25px;
+}
+
+.recipe-steps-section {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.step-item {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.step-number {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.step-content {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.step-text-container {
+    flex: 1;
+    display: flex;
+}
+
+.step-text-input {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f1f1f1;
+    resize: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.step-image-container {
+    width: 120px;
+    height: 120px;
+}
+
+.step-image-upload {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.image-icon, .photo-icon {
+    font-size: 30px;
+    color: #ccc;
+}
+
+.completed-photos-section {
+    margin-bottom: 30px;
+}
+
+.completed-photos-container {
+    display: flex;
+    gap: 15px;
+}
+
+.completed-photo-item {
+    width: 150px;
+    height: 150px;
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.cooking-tip-section {
+    margin-bottom: 30px;
+}
+
+.cooking-tip-container {
+    width: 100%;
+}
+
+.cooking-tip-input {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f1f1f1;
+    resize: none;
+    margin-top: 20px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.tag-section {
+    margin-bottom: 30px;
+}
+
+.tag-container {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tag-input {
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f1f1f1;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+.tag-helper-text {
+    font-size: 14px;
+    color: #888;
+    margin-top: 5px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    gap: 40px;
+    margin-left: 120px;
+}
+
+.cancel-btn {
+    padding: 10px 30px;
+    background-color: #FFFAE9;
+    color: #D94C4C;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    width: 160px;
+
+    border: 1px solid #D94C4C;
+    font-size: 16px;
+}
+
+.save-temp-btn {
+    padding: 10px 30px;
+    background-color: #e74c3c;
+    color: #FFFAE9;
+    border: 1px solid #ddd;
+    border-color: #d94c4c;
+    cursor: pointer;
+    border-radius: 10px;
+    width: 160px;
+
+	font-size: 16px;
+}
+
+.complete-btn {
+    padding: 10px 30px;
+    background-color: #FFFAE9;
+    color: #D94C4C;
+    border: 1px solid;
+    border-color: #d94c4c;
+    cursor: pointer;
+    border-radius: 10px;
+    width: 120px;
+    margin-left: 70px;
+}
+
+.category-column {
+    flex: 1;
+    margin-right: 10px;
+    margin-left: 20px;
+    position: relative;
+}
+
+.category-column:nth-child(1)::after, .category-column:nth-child(2)::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -10px;
+    width: 1px;
+    height: 100%;
+    background-color: #A49177;
+}
+.category-column:nth-child(2),
+.category-column:nth-child(3) {
+    margin-left: 40px; /* 원하는 값으로 조절 */
+}
+.ingredient-group-header {
+    background-color: white;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    border: none;
+    outline: none;
+    width: 30%;
+    font-size: 16px;
+    color: black;
+    border : 1px solid #7A9E9F;
+}
+
+.ingredient-group-header::placeholder {
+    color: #888;
+    font-weight: normal;
+}
+
+.ingredient-row {
+    margin-bottom: 10px;
+}
+
+.ingredient-row input {
+    background-color: #f1f1f1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.add-ingredient-btn {
+    padding: 6px 15px;
+    border: 1px solid #d94c4c;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #D94C4C;
+    background-color: #fffae9;
+    margin-top: 10px;
+}
+
+.add-btn {
+	padding: 8px 20px; 
+	border: 1px solid #d94c4c; 
+	border-radius: 5px; 
+	cursor: pointer; 
+	width: 120px; 
+	color: #D94C4C; 
+	background-color: #fffae9;
+	margin: 0 10px;
+	font-size: 14px;
+	font-weight: bold;
+}
+.ingredient-row input {
+	font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+    <form method="post" action="recipe_proc.jsp" enctype="multipart/form-data">
+        <input type="hidden" name="ingredients" id="ingredients-hidden">
+        <input type="hidden" name="steps" id="steps-hidden">
+        
+        <input type="hidden" name="user_id" value="abcd"> <!-- 임시로 고정 -->
+
+        <div class="wrapper">
+            <div class="container">
+                <div class="panel left-panel">왼쪽 패널</div>
+                <div class="content">
+                    <div class="recipe-form">
+                        <div class="form-header">레시피 등록</div>
+
+                        <!-- 레시피 제목 + 대표 이미지 -->
+                        <div class="form-group">
+                            <div class="form-label">레시피 제목</div>
+                            <div class="form-input" style="display: flex; align-items: center; gap: 50px;">
+                                <input type="text" class="text-input" name="title" placeholder="예) 소고기 미역국 끓이기">
+                                
+                            </div>
+                        </div>
+
+                        <!-- 요리 소개 -->
+                        <div class="form-group">
+                            <div class="form-label">요리 소개</div>
+                            <div class="form-input">
+                                <textarea class="textarea-input" name="description" placeholder="이 레시피의 탄생배경을 적어주세요."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 동영상 업로드 섹션 -->
+                        <div class="form-group">
+                            <div class="form-label">동영상</div>
+                            <div class="form-input">
+                                <div class="video-upload">
+                                    <textarea type="text" class="video-input" name="videos_url" placeholder="유튜브 주소 입력하세요"></textarea>
+                                    <div class="video-upload-container">
+                                        <input type="file" class="video-file-input" accept="video/*" style="display: none;" onchange="previewVideo(this)">
+                                        <button type="button" class="video-button" onclick="this.parentElement.querySelector('.video-file-input').click()">
+                                            <span class="material-icons video-icon">🎥</span>
+                                            <span class="video-text">영상 업로드</span>
+                                            <video class="video-preview-player" controls style="display: none; width: 100%; height: 100%; border-radius: 10px;">
+                                                <source type="video/mp4">
+                                                <source type="video/webm">
+                                                브라우저가 동영상을 지원하지 않습니다.
+                                            </video>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 카테고리 -->
+                        <div class="form-group">
+                            <div class="form-label">카테고리</div>
+                            <div class="form-input">
+                                <div class="category-section">
+                                    <div class="category-column">
+                                        <div class="category-title">종류별</div>
+                                        <div class="category-items">
+                                            <label class="category-item"><input type="checkbox" name="category" value="반찬"> 반찬</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="국/탕"> 국/탕</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="디저트"> 디저트</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="면/파스타"> 면/파스타</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="밥/죽/떡"> 밥/죽/떡</label>
+                                        </div>
+                                    </div>
+                                    <div class="category-column">
+                                        <div class="category-title">재료별</div>
+                                        <div class="category-items">
+                                            <label class="category-item"><input type="checkbox" name="category" value="소고기"> 소고기</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="돼지고기"> 돼지고기</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="닭고기"> 닭고기</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="채소류"> 채소류</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="해물류"> 해물류</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="달걀/유제품"> 달걀/유제품</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="버섯류"> 버섯류</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="콩/견과류"> 콩/견과류</label>
+                                        </div>
+                                    </div>
+                                    <div class="category-column">
+                                        <div class="category-title">나라별</div>
+                                        <div class="category-items">
+                                            <label class="category-item"><input type="checkbox" name="category" value="한식"> 한식</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="일식"> 일식</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="중식"> 중식</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="베트남"> 베트남</label>
+                                            <label class="category-item"><input type="checkbox" name="category" value="남미"> 남미</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 요리정보 섹션 -->
+                        <div class="form-group">
+                            <div class="form-label">요리정보</div>
+                            <div class="form-input">
+                                <div class="cooking-info-section">
+                                    <div class="info-item">
+                                        <div class="info-title">인원</div>
+                                        <div class="info-input-container">
+                                            <input type="text" class="info-input" name="servingCount">
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-title">시간</div>
+                                        <div class="info-input-container">
+                                            <input type="text" class="info-input" name="cooking_time">
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-title">난이도</div>
+                                        <div class="info-input-container">
+                                            <input type="text" class="info-input" name="level">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 재료정보 섹션 -->
+                        <div class="form-group">
+                            <div class="form-label">재료정보</div>
+                            <div class="form-input" id="ingredients-container">
+                                <div class="ingredient-group">
+                                    <input type="text" class="ingredient-group-header" name="group_name[]" value="재료" readonly>
+                                    <div class="ingredient-row" style="margin-bottom: 10px;">
+                                        <div class="ingredient-input" style="display: grid; grid-template-columns: 200px 1fr 100px 100px 1fr; gap: 10px; border-radius: 0px; overflow: hidden;">
+                                            <input type="text" name="ingredient_name[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) 배추김치">
+                                            <input type="text" name="quantity1[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="10(수량)">
+                                            <input type="text" name="quantity2[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) g,ml">
+                                            <input type="text" name="quantity3[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) (비고)">
+                                        </div>
+                                    </div>
+                                    <div class="ingredient-row" style="margin-bottom: 10px;">
+                                        <div style="display: grid; grid-template-columns: 200px 1fr 100px 100px 1fr; gap: 10px; border-radius: 0px; overflow: hidden;">
+                                            <input type="text" name="ingredient_name[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) 양파">
+                                            <input type="text" name="quantity1[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="10(수량)">
+                                            <input type="text" name="quantity2[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) g,ml">
+                                            <input type="text" name="quantity3[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) (비고)">
+                                        </div>
+                                    </div>
+                                    <div class="ingredient-row" style="margin-bottom: 10px;">
+                                        <div style="display: grid; grid-template-columns: 200px 1fr 100px 100px 1fr; gap: 10px; border-radius: 0px; overflow: hidden;">
+                                            <input type="text" name="ingredient_name[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) 마늘">
+                                            <input type="text" name="quantity1[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="10(수량)">
+                                            <input type="text" name="quantity2[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) g,ml">
+                                            <input type="text" name="quantity3[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) (비고)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 추가 버튼 -->
+                                <div style="text-align: center; margin-top: 20px;">
+                                    <button class="add-btn" type="button" onclick="addIngredientGroup()" >그룹 추가</button>
+                                    <button class="add-btn" type="button" onclick="addIngredientRow(this)">재료 추가</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 요리 순서 섹션 -->
+                        <div class="recipe-steps-section">
+                            <div class="horizontal-layout">
+                                <div class="label-column">요리순서</div>
+                                <div class="content-column">
+                                    <div id="steps-container">
+                                        <div class="step-item">
+                                            <div class="step-header">
+                                                <div class="step-number">STEP 1</div>
+                                            </div>
+                                            <div class="step-content">
+                                                <div class="step-text-container">
+                                                    <textarea class="step-text-input" placeholder="예) 소고기는 기름기를 떼어내고 적당한 크기로 썰어주세요."></textarea>
+                                                </div>
+                                                <div class="step-image-container">
+                                                    <div class="step-image-upload">
+                                                        <input type="file" class="step-file-input" name="step_image_0" accept="image/*" style="display: none;" onchange="previewStepImage(this)">
+                                                        <div class="image-icon">+</div>
+                                                        <img class="step-preview-image" style="max-width: 100%; max-height: 100%; display: none;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" onclick="addStep()" style="padding: 8px 20px; border: 1px solid #d94c4c; border-radius: 5px; 
+                                        cursor: pointer; display: block; width: 120px; margin: 20px auto; 
+                                        color: #D94C4C; background-color: #fffae9;
+                                        font-size: 14px; font-weight: bold;">순서추가</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 요리완성사진 섹션 -->
+                        <div class="completed-photos-section">
+                            <div class="horizontal-layout">
+                                <div class="label-column">요리완성사진</div>
+                                <div class="content-column">
+                                    <div class="completed-photos-container">
+                                        <div class="completed-photo-item">
+                                            <input type="file" name="complete_img" class="completed-file-input" accept="image/*" style="display: none;" onchange="previewCompletedImage(this)">
+                                            <div class="photo-icon">+</div>
+                                            <img class="completed-preview-image" style="max-width: 100%; max-height: 100%; display: none;" />
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 요리팁 섹션 -->
+                        <div class="cooking-tip-section">
+                            <div class="horizontal-layout">
+                                <div class="label-column">요리팁</div>
+                                <div class="content-column">
+                                    <div class="cooking-tip-container">
+                                        <textarea class="cooking-tip-input" name="tip" placeholder="예) 고기 잡내는 이렇게 제거해요!"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 태그 섹션 -->
+                        <div class="tag-section">
+                            <div class="horizontal-layout">
+                                <div class="label-column">태그</div>
+                                <div class="content-column">
+                                    <div class="tag-container">
+                                        <input type="text" class="tag-input" name="tags" placeholder="">
+                                    </div>
+                                    <div class="tag-helper-text">주재료, 목적, 효능, 대상 등을 태그로 남겨주세요. 예) 닭고기, 다이어트, 비만, 청소년, 간식거리, 이유식</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 버튼 그룹 -->
+                        <div class="button-group">
+                            <button type="button" class="save-temp-btn" onclick="beforeSubmit()">저장</button>
+                            <button type="reset" class="cancel-btn">취소</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel right-panel">오른쪽 패널</div>
+            </div>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+    
+	//네비게이션 바 크기 동적으로 가져오기
+    function adjustBodyPadding() {
+      const nav = document.getElementById('navbar');
+      if (nav) {
+        const navHeight = nav.offsetTop + nav.offsetHeight;
+        document.body.style.paddingTop = navHeight + 'px';
+      }
+    }
+
+    window.addEventListener('load', adjustBodyPadding);
+    window.addEventListener('resize', adjustBodyPadding);
+    
+    // 요리 대표 사진 이미지 미리보기 함수
+    function previewMainImage(input) {
+        var file = input.files[0];
+        var previewImage = input.parentElement.querySelector('.main-preview-image');
+        var icon = input.parentElement.querySelector('.photo-icon');
+        var text = input.parentElement.querySelector('.image-text');
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                icon.style.display = 'none';
+                text.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    function serializeIngredients() {
+        const groups = document.querySelectorAll("#ingredients-container .ingredient-group");
+        let ingredientsData = [];
+
+        groups.forEach(group => {
+            const groupName = group.querySelector(".ingredient-group-header").value.trim();
+            const rows = group.querySelectorAll(".ingredient-row"); // 그룹 내의 모든 재료 행 찾기
+
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll("input[type='text']");
+                const ingredientName = inputs[0]?.value.trim();
+                const quantity1 = inputs[1]?.value.trim();
+                const quantity2 = inputs[2]?.value.trim();
+                const quantity3 = inputs[3]?.value.trim();
+
+                if (ingredientName || quantity1 || quantity2 || quantity3) {
+                    ingredientsData.push({
+                        group_name: groupName,
+                        ingredient_name: ingredientName,
+                        quantity1: quantity1,
+                        quantity2: quantity2,
+                        quantity3: quantity3
+                    });
+                }
+            });
+        });
+
+        const ingredientsJson = JSON.stringify(ingredientsData);
+        document.getElementById("ingredients-hidden").value = ingredientsJson;
+
+        console.log("✅ 직렬화된 재료 데이터:", ingredientsJson);
+    }
+
+    // 요리 순서 직렬화 함수 (텍스트와 이미지 포함)
+    function serializeSteps() {
+        const steps = [];
+        const stepInputs = document.querySelectorAll(".step-item");
+        
+        stepInputs.forEach((item, index) => {
+        	const explanation = item.querySelector(".step-text-input")?.value.trim() || "";
+            const imageInput = item.querySelector(".step-file-input");
+            let imageKey = "";
+
+            if (imageInput && imageInput.files[0]) {
+                imageKey = "step_image_" + index; // 각 이미지 입력 필드에 고유한 이름 부여
+                imageInput.setAttribute("name", imageKey);
+            }
+
+            if (explanation || imageKey) { // 텍스트나 이미지가 있으면 추가
+                steps.push({
+                    explanation: explanation,
+                    image: imageKey // 파일 입력 필드의 이름 저장 (proc.jsp에서 파일을 찾기 위해)
+                });
+            }
+        });
+        
+        // JSON으로 변환
+        const stepsJson = JSON.stringify(steps);
+        document.getElementById("steps-hidden").value = stepsJson;
+
+        console.log("✅ 직렬화된 요리 순서:", stepsJson);
+    }
+
+    // 동영상 미리보기 함수
+    function previewVideo(input) {
+        var file = input.files[0];
+        var button = input.parentElement.querySelector('.video-button');
+        var previewPlayer = button.querySelector('.video-preview-player');
+        var icon = button.querySelector('.video-icon');
+        var text = button.querySelector('.video-text');
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewPlayer.src = e.target.result;
+                previewPlayer.style.display = 'block'; // 동영상 표시
+                icon.style.display = 'none'; // 아이콘 숨김
+                text.style.display = 'none'; // 텍스트 숨김
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // 이벤트 리스너를 요소에 붙이는 함수
+    function attachEventListeners(element) {
+        if (element) {
+            element.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('main-preview-image') && 
+                    !e.target.classList.contains('step-preview-image') && 
+                    !e.target.classList.contains('completed-preview-image') &&
+                    !e.target.classList.contains('video-preview-player')) {
+                    var fileInput = element.querySelector('input[type="file"]');
+                    if (fileInput) {
+                        fileInput.click();
+                    }
+                }
+            });
+        }
+    }
+
+    // 초기 로드 시 기존 요소에 이벤트 리스너 적용
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.step-image-upload, .completed-photo-item, .image-upload, .video-upload-container').forEach(item => {
+            attachEventListeners(item);
+        });
+    });
+
+    // 기존 스텝 및 재료 관련 함수
+    var currentStepCount = 1;
+
+    function addStep() {
+        currentStepCount++;
+        var stepsContainer = document.getElementById('steps-container');
+        var newStepDiv = document.createElement('div');
+        newStepDiv.className = 'step-item';
+        
+        var stepContent = '';
+        stepContent += '<div class="step-header">';
+        stepContent += '<div class="step-number">STEP ' + currentStepCount + '</div>';
+        stepContent += '</div>';
+        stepContent += '<div class="step-content">';
+        stepContent += '<div class="step-text-container">';
+        stepContent += '<textarea class="step-text-input" placeholder="예) 다음 요리 단계를 설명해주세요."></textarea>';
+        stepContent += '</div>';
+        stepContent += '<div class="step-image-container">';
+        stepContent += '<div class="step-image-upload">';
+        stepContent += '<input type="file" class="step-file-input" name="step_image_' + (currentStepCount - 1) + '" accept="image/*" style="display: none;" onchange="previewStepImage(this)">';
+        stepContent += '<div class="image-icon">+</div>';
+        stepContent += '<img class="step-preview-image" style="max-width: 100%; max-height: 100%; display: none;" />';
+        stepContent += '</div>';
+        stepContent += '</div>';
+        stepContent += '</div>';
+        
+        newStepDiv.innerHTML = stepContent;
+        stepsContainer.insertBefore(newStepDiv, stepsContainer.lastElementChild); // 버튼 앞에 추가
+        attachEventListeners(newStepDiv.querySelector('.step-image-upload'));
+    }
+
+    function previewStepImage(input) {
+        var file = input.files[0];
+        var previewImage = input.parentElement.querySelector('.step-preview-image');
+        var icon = input.parentElement.querySelector('.image-icon');
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                icon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function previewCompletedImage(input) {
+        var file = input.files[0];
+        var previewImage = input.parentElement.querySelector('.completed-preview-image');
+        var icon = input.parentElement.querySelector('.photo-icon');
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                icon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // 재료 추가 함수
+    function addIngredient() {
+        var container = document.getElementById('ingredients-container');
+        var newRow = document.createElement('div');
+        newRow.className = 'ingredient-row';
+        newRow.style.marginBottom = '10px';
+        var newInputRow = `
+            <div style="display: grid; grid-template-columns: 200px 1fr 100px 100px 1fr; gap: 10px; border-radius: 0px; overflow: hidden;">
+                <input type="text" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) 새 재료">
+                <input type="text" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="10(수량)">
+                <input type="text" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) g,ml">
+                <input type="text" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) (비고)">
+            </div>
+        `;
+        newRow.innerHTML = newInputRow;
+        container.insertBefore(newRow, container.lastElementChild);
+    }
+    
+    // beforeSubmit 함수 수정 (serializeSteps 호출)
+	function beforeSubmit() {
+	    // 제목 입력값 가져오기
+	    const titleInput = document.querySelector("input[name='title']");
+    	const title = titleInput.value.trim();
+    	
+    	//소개
+    	const descInput = document.querySelector("textarea[name='description']");
+    	
+    	//요리 완성 사진
+    	const completeImgInput = document.querySelector("input[name='complete_img']");
+	
+     
+        
+	    // 제목이 비어있으면 경고 띄우고 제출 중단
+	    if (title === "") {
+	        alert("레시피 제목을 입력해주세요.");
+	        titleInput.focus();
+	        return;
+	    }
+	    
+	 	// 소개 확인
+	    if (!descInput.value.trim()) {
+	        alert("요리 소개를 입력해주세요.");
+	        descInput.focus();
+	        return;
+	    }
+	    
+	 // 완성사진 확인
+	    if (!completeImgInput || completeImgInput.files.length === 0) {
+	        alert("요리 완성사진을 등록해주세요.");
+	        completeImgInput.click(); // 자동으로 파일 선택창 열기
+	        return;
+	    }
+	 
+	
+	    serializeIngredients();  // 재료 직렬화
+	    serializeSteps();       // 요리 순서 직렬화 (텍스트 + 이미지)
+	
+	    // 디버깅용 출력
+	    console.log("🥕 ingredients:", document.getElementById("ingredients-hidden").value);
+	    console.log("📋 steps:", document.getElementById("steps-hidden").value);
+	
+	    // 폼 수동 전송
+	    document.querySelector("form").submit();
+	}
+
+
+
+    function addIngredientGroup() {
+        const container = document.getElementById('ingredients-container');
+
+        const group = document.createElement('div');
+        group.className = 'ingredient-group';
+
+        const headerInput = document.createElement('input');
+        headerInput.type = 'text';
+        headerInput.className = 'ingredient-group-header';
+        headerInput.name = 'group_name[]';
+        headerInput.placeholder = "그룹명을 입력하세요"; // 사용자 입력 받음
+        headerInput.required = true; // 필수 입력 처리도 가능
+
+        const row = createIngredientRow();
+
+        group.appendChild(headerInput);
+        group.appendChild(row);
+
+        container.insertBefore(group, container.lastElementChild);
+    }
+
+    function addIngredientRow(button) {
+        const container = document.getElementById('ingredients-container');
+        const groups = container.getElementsByClassName('ingredient-group');
+        if (groups.length === 0) {
+            alert("먼저 그룹을 추가해주세요.");
+            return;
+        }
+
+        const lastGroup = groups[groups.length - 1];
+        const row = createIngredientRow();
+        lastGroup.appendChild(row); // 그룹 내부에 추가
+    }
+
+    function createIngredientRow() {
+        const row = document.createElement('div');
+        row.className = 'ingredient-row';
+        row.style.marginBottom = '10px';
+
+        row.innerHTML = `
+            <div style="display: grid; grid-template-columns: 200px 1fr 100px 100px 1fr; gap: 10px;">
+                <input type="text" name="ingredient_name[]" placeholder="예) 재료명" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;">
+                <input type="text" name="quantity1[]" placeholder="예) 10(수량)" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;">
+                <input type="text" name="quantity2[]" placeholder="예) g,ml" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;">
+                <input type="text" name="quantity3[]" placeholder="예) 비고" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;">
+            </div>
+        `;
+
+        return row;
+    }
+    
+    </script>
+</body>
+</html>
