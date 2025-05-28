@@ -1,0 +1,112 @@
+/* Top Bar */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to right, #ffffff, #f0f8ff);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-sizing: border-box;
+    z-index: 1000;
+    animation: fadeInDown 1s ease-out;
+}
+
+/* 로고 */
+.logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    animation: glowLogo 3s ease-in-out infinite alternate;
+}
+
+.logo img {
+    height: 120px;
+    margin-right: 10px;
+    animation: float 2.5s ease-in-out infinite;
+}
+
+/* 메뉴 */
+.nav-menu {
+    display: flex;
+    gap: 24px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 16px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* 메뉴 호버 효과 */
+.nav-menu a:hover {
+    color: #007bff;
+    text-shadow: 0 0 6px #007bff;
+    transform: scale(1.1);
+}
+
+/* 밑줄 효과 */
+.nav-menu a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+}
+
+.nav-menu a:hover::after {
+    width: 100%;
+}
+
+body {
+    padding-top: 200px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6fc;
+    color: #333;
+}
+
+/* 애니메이션 */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes glowLogo {
+    0% {
+        text-shadow: 0 0 8px #007bff;
+    }
+    100% {
+        text-shadow: 0 0 16px #00c3ff;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}

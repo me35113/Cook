@@ -1,43 +1,59 @@
 body {
     margin: 0;
     font-family: 'Noto Sans KR', sans-serif;
-    background-color: #fffaf3;
+    background: linear-gradient(to bottom right, #fffaf3, #fff0e6);
     display: flex;
     flex-direction: column;
     align-items: center;
+    animation: fadeIn 1s ease-in;
 }
 
 .logo {
     margin-top: 40px;
+    animation: floatLogo 2s ease-in-out infinite alternate;
 }
 
 .container {
-    width: 300px;
+    width: 320px;
     margin-top: 20px;
     text-align: center;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    animation: slideUp 0.7s ease-in-out;
 }
 
 h2 {
     margin-bottom: 30px;
     font-size: 22px;
     font-weight: bold;
+    color: #333;
 }
 
-input[type="text"], input[type="password"] {
-    width: 100%;
+input[type="text"],
+input[type="password"] {
+    width: 70%;
     padding: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     border: none;
-    border-bottom: 2px solid #d9534f;
     background: none;
-    font-size: 14px;
+    font-size: 20px;
     outline: none;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-bottom: 2px solid #ff6b6b;
+    box-shadow: 0 2px 6px rgba(255, 107, 107, 0.2);
 }
 
 .checkbox {
     text-align: left;
     margin: 8px 0 20px 0;
-    font-size: 12px;
+    font-size: 15px;
+    color: #555;
 }
 
 button.login-btn {
@@ -49,23 +65,95 @@ button.login-btn {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+button.login-btn:hover {
+    background-color: #0000cc;
+    box-shadow: 0 4px 12px rgba(26, 26, 255, 0.4);
 }
 
 .signup-link {
     font-size: 12px;
     display: block;
     margin-bottom: 20px;
+    color: #777;
+}
+
+.signup-link:hover {
+    color: #1a1aff;
+    text-decoration: underline;
 }
 
 .sns-login {
     font-size: 12px;
     margin-bottom: 8px;
+    color: #888;
 }
 
 .sns-icons img {
-    width: 36px;
-    height: 36px;
+    width: 150px;
+    height: 40px;
     margin: 0 8px;
     cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sns-icons img:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatLogo {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-6px);
+    }
+}
+
+/* 반응형 */
+@media (max-width: 400px) {
+    .container {
+        width: 90%;
+        padding: 24px 16px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        font-size: 13px;
+    }
+
+    .login-btn {
+        font-size: 14px;
+    }
 }

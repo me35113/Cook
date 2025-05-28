@@ -1,6 +1,67 @@
-<form th:action="@{/signup}" method="post" th:object="${user}">
-    <input type="text" th:field="*{username}" placeholder="Username" required />
-    <input type="password" th:field="*{password}" placeholder="Password" required />
-    <input type="email" th:field="*{email}" placeholder="Email" required />
-    <button type="submit">회원가입</button>
+<form method="post" action="/signup">
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>아이디</th>
+            <td><input type="text" name="userId" required></td>
+        </tr>
+        <tr>
+            <th>비밀번호</th>
+            <td><input type="password" name="pwd" required></td>
+        </tr>
+        <tr>
+            <th>이름</th>
+            <td><input type="text" name="name" required></td>
+        </tr>
+        <tr>
+            <th>이메일</th>
+            <td><input type="email" name="email" required></td>
+        </tr>
+        <tr>
+            <th>프로필 이미지 URL</th>
+            <td><input type="text" name="profile"></td>
+        </tr>
+        <tr>
+            <th>성별</th>
+            <td>
+                <select name="gender">
+                    <option value="">선택</option>
+                    <option value="남자">남자</option>
+                    <option value="여자">여자</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>우편번호</th>
+            <td><input type="text" name="zipcode"></td>
+        </tr>
+        <tr>
+            <th>주소</th>
+            <td><input type="text" name="address"></td>
+        </tr>
+        <tr>
+            <th>직업</th>
+            <td><input type="text" name="job"></td>
+        </tr>
+        <tr>
+            <th>자기소개</th>
+            <td><textarea name="intro" rows="3" cols="30"></textarea></td>
+        </tr>
+        <tr>
+            <th>알레르기</th>
+            <td><input type="text" name="allergy"></td>
+        </tr>
+        <tr>
+            <th>등급</th>
+            <td><input type="number" name="grade" value="0"></td>
+        </tr>
+        <tr>
+            <th>랭크</th>
+            <td><input type="text" name="rank"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center;">
+                <button type="submit">회원가입</button>
+            </td>
+        </tr>
+    </table>
 </form>
