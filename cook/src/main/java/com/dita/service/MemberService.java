@@ -19,7 +19,7 @@ public class MemberService {
 
     // 아이디 중복 체크
     public boolean existsByUserId(String userId) {
-        return memberRepository.existsById(userId);
+        return memberRepository.existsByUserId(userId);
     }
 
     // 회원 저장

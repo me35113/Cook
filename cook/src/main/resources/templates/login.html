@@ -26,6 +26,9 @@
     </div>
 
     <form th:action="@{/login}" method="post">
+    <div th:if="${loginError}" style="color: red;">
+    <p th:text="${loginError}"></p>
+	</div>
         <input type="text" name="userId" placeholder="아이디" required />
         <input type="password" name="pwd" placeholder="비밀번호" required />
         <div class="checkbox">
@@ -33,6 +36,7 @@
             <label for="remember-me">로그인 상태 유지</label>
         </div>
         <button type="submit" class="login-btn">로그인</button>
+        
     </form>
 
     <a class="signup-link" th:href="@{/signup}">회원가입</a>

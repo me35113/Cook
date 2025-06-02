@@ -35,7 +35,6 @@
 </div>
 
 <form th:action="@{/signup}" method="post" th:object="${signupRequestDto}">
-     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     <table border="1" cellpadding="5" cellspacing="0" style="width: 500px; margin: 0 auto;">
         <tr>
             <th>아이디</th>
