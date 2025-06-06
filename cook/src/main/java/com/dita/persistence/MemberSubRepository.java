@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.dita.domain.MemberSub;
 
 @Repository
-public interface MemberSubRepository extends JpaRepository<MemberSub, Long> {
+public interface MemberSubRepository extends JpaRepository<MemberSub, String> {
     
 	boolean existsBySubUserAndSubedUser(String subUser, String subedUser);
     void deleteBySubUserAndSubedUser(String subUser, String subedUser);
