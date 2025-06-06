@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${dto.title + ' - 게시글 상세'}">게시글 상세</title>
+    <link rel="stylesheet" href="/css/top.css">
+    <style>
+        body {
+            margin: 0;
+            padding-top: 130px;
+            font-family: Arial, sans-serif;
+        }
+        .read-container {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            resize: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .btns {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .btns button {
+            padding: 6px 16px;
+            margin: 0 8px;
+            font-size: 14px;
+            border: 1px solid #D94C4C;
+            background-color: white;
+            color: #D94C4C;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btns button.submit {
+            background-color: #D94C4C;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background: #fffaf0;
+            margin: 10% auto;
+            padding: 30px;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #999;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .modal-content input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .modal-content .btns {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .modal-content .btns button {
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 게시글 내용 -->
+<div class="read-container">
+    <h1 th:text="${dto.title}">제목</h1>
+    <input type="hidden" id="boardId" th:value="${dto.boardId}" />
+    <input type="hidden" id="boardTitle" th:value="${dto.title}" />
+
+    <table>
+        <tr>
+            <th>작성자</th>
+            <td th:text="${dto.userId}">작성자</td>
+            <th>작성일</th>
+            <td th:text="${#temporals.format(dto.boardCreate, 'yyyy-MM-dd')}">날짜</td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td colspan="3">
+                <textarea readonly th:text="${dto.content}">내용</textarea>
+            </td>
+        </tr>
+        <tr>
+            <th>조회수</th>
+            <td colspan="3" th:text="${dto.viewCount}">0</td>
+        </tr>
+    </table>
+
+    <div class="btns">
+        <button class="submit" onclick="openModal()">신고</button>
+        <button onclick="location.href='/boardlist'">목록</button>
+    </div>
+</div>
+
+<!-- 신고 모달 -->
+<div id="warningModal" class="modal">
+    <div class="modal-content">
+        <h2>신고 사유를 선택해주세요.</h2>
+        <form id="warningForm">
+            <label><input type="checkbox" name="reason" value="광고/홍보"> 광고/홍보</label>
+            <label><input type="checkbox" name="reason" value="음란/선정성"> 음란/선정성</label>
+            <label><input type="checkbox" name="reason" value="욕설/비방"> 욕설/비방</label>
+            <label><input type="checkbox" name="reason" value="기타"> 기타</label>
+            <input type="text" name="etc_reason" placeholder="기타 사유 입력">
+
+            <div class="btns">
+                <button type="submit" class="submit">확인</button>
+                <button type="button" onclick="closeModal()">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal() {
+    document.getElementById("warningModal").style.display = "block";
+}
+function closeModal() {
+    document.getElementById("warningModal").style.display = "none";
+}
+
+document.getElementById("warningForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const checked = [...document.querySelectorAll('input[name="reason"]:checked')].map(cb => cb.value);
+    const etc = document.querySelector('input[name="etc_reason"]').value.trim();
+    if (checked.length === 0) {
+        alert("신고 사유를 선택해주세요.");
+        return;
+    }
+
+    const type = checked.join(", ");
+    const detail = etc || "";
+    const title = document.getElementById("boardTitle").value;
+    const boardId = document.getElementById("boardId").value;
+
+    const data = new URLSearchParams();
+    data.append("board_id", boardId);
+    data.append("type", type);
+    data.append("title", title);
+    data.append("detail", detail);
+
+    fetch("/report_proc", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: data
+    }).then(res => {
+        if (res.redirected) {
+            window.location.href = res.url;
+        } else {
+            alert("신고 실패");
+        }
+    }).catch(err => {
+        console.error(err);
+        alert("오류 발생");
+    });
+
+    closeModal();
+});
+</script>
+
+</body>
+</html>

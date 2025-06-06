@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판 작성</title>
+    <link rel="stylesheet" href="/css/top.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            padding-top: 130px;
+            font-family: 'Arial', sans-serif;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        th, td {
+            padding: 8px 6px;
+            vertical-align: middle;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            width: 120px;
+            text-align: left;
+            color: #555;
+            font-weight: normal;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        textarea {
+            height: 300px;
+            resize: vertical;
+        }
+        .btn-area {
+            text-align: center;
+            margin-top: 45px;
+        }
+        .btn-area input {
+            padding: 4px 14px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            margin: 0 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .submit-btn {
+            background-color: #D94C4C;
+            color: white;
+        }
+        .cancel-btn {
+            border: 1px solid #D94C4C;
+            background: white;
+            color: #D94C4C;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="nav-menu">
+        <a href="/">홈</a>
+        <a href="/boardlist">게시판</a>
+        <a href="#">문의하기</a>
+    </div>
+    <div class="logo">
+        <img src="/images/logo.jpg" alt="로고">
+        요리조리
+    </div>
+</div>
+
+<div class="form-container">
+    <form th:action="@{/boardlist_write}" method="post" th:object="${board}">
+        <table>
+            <tr>
+                <th>제목</th>
+                <td colspan="3">
+                    <input type="text" th:field="*{title}" required>
+                </td>
+            </tr>
+            <tr>
+                <th>작성자</th>
+                <td>user123</td>
+                <th>작성시간</th>
+                <td th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">-</td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td colspan="3">
+                    <textarea th:field="*{content}" required></textarea>
+                </td>
+            </tr>
+        </table>
+        <div class="btn-area">
+            <input type="submit" value="등록" class="submit-btn">
+            <input type="button" value="취소" class="cancel-btn" onclick="history.back();">
+        </div>
+    </form>
+</div>
+</body>
+</html>

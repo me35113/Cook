@@ -1,0 +1,631 @@
+@charset "UTF-8";
+
+* {
+	margin: 0;
+	padding: 0;
+	/*box-sizing: border-box;*/
+}
+
+body {
+	font-family: "Gowun Dodum", sans-serif;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	padding-top: 100px; /* top.jsp의 높이만큼 여백 추가 */
+	overflow-x: hidden;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+ul, li {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.wrapper {
+	flex: 1;
+	display: flex;
+	width: 100%;
+}
+
+.container {
+	/*display: flex;*/
+	width: 1240px;
+	/*min-height: 150vh; /* 본문 높이를 늘려 스크롤 가능하게 설정 */
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.panel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.content {
+	/*background-color: lightgray;*/
+	/*display: flex;*/
+	/*align-items: center;*/
+	justify-content: center;
+	/*font-size: 20px;*/
+	/*font-weight: bold;*/
+	width: 100%;
+	min-width: 1240px;
+	display: flex;
+	flex-direction: column;
+}
+
+.recipe-top {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 95px;
+}
+
+.recipe-img {
+	background-color: lightgray;
+	background-size: cover;
+	background-position: center;
+	height: 400px;
+	margin: 0 auto;
+	max-width: 640px;
+	width: 100%;
+	margin-bottom: 52px;
+}
+
+.recipe-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.recipe-title {
+	margin: auto;
+	margin-bottom: 10px;
+	width: 640px;
+}
+
+.recipe-title h2 {
+	margin-bottom: 22px;
+	text-align: left;
+	overflow-wrap: break-word;
+	font-size: 24px;
+	line-height: 29px;
+}
+
+.recipe-title p {
+	font-size: 16px;
+	font-weight: 600;
+	padding: 0 2px 55px 2px;
+	color: #8E8E8E;
+	overflow-wrap: break-word;
+}
+
+.user-info {
+	display: flex;
+	position: relative;
+	justify-content: space-between;
+	margin-bottom: 30px;
+}
+
+.profile-info {
+	display: flex;
+	padding: 2px 0;
+}
+
+.profile-img {
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	margin-right: 10px;
+}
+
+.profile {
+	width: 24px;
+	height: 24px;
+}
+
+.profile-name {
+	text-align: center;
+	padding: 3px 0;
+}
+
+.profile-name span {
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 18px;
+}
+
+.user-info button {
+	font-family: "Gowun Dodum", sans-serif;
+	padding: 5px 14px;
+	margin-left: 20px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 19px;
+	background: #FFFFFF;
+	color: #7A9E9F;
+	align-content: space-between;
+	height: 29px;
+	border: 1px solid #7A9E9F;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.subscribe-btn {
+	font-family: "Gowun Dodum", sans-serif;
+	padding: 5px 14px;
+	cursor: pointer;
+	font-size: 15px;
+	line-height: 19px;
+	font-weight: 600;
+	margin-left: 20px;
+}
+
+.btn-unsubscribed {
+	font-family: "Gowun Dodum", sans-serif;
+	padding: 5px 14px;
+	margin-left: 20px;
+	background-color: white;
+	color: #7A9E9F;
+	border: 1px solid #7A9E9F;
+	border-radius: 5px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 19px;
+	cursor: pointer;
+}
+
+.unsub-btn:hover {
+	background-color: #7A9E9F;
+	color: white;
+}
+
+.sub-btn {
+	font-family: "Gowun Dodum", sans-serif;
+	padding: 5px 14px;
+	margin-left: 20px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 19px;
+	background-color: #7A9E9F;
+	color: white;
+	border: 1px solid #7A9E9F;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+.write-info {
+	font-size: 15px;
+	font-weight: 500;
+	color: #3B3B3B;
+	margin-bottom: 70px;
+}
+
+.write-info span {
+	padding-right: 29px;
+}
+
+.recipe-info {
+	display: flex;
+	justify-content: center;
+	gap: 80px; /* 아이템 간 간격 */
+	width: 446px;
+	margin: auto auto 60px auto;
+}
+
+.info-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 33%;
+}
+
+.info-item p {
+	font-size: 16px;
+	font-weight: 600;
+	margin: 5px auto;
+}
+
+.recipe-heart {
+	display: flex;
+	justify-content: center;
+	gap: 80px; /* 아이템 간 간격 */
+	margin: 0 auto 100px;
+}
+
+.heart-icon {
+	display: flex;
+	cursor: pointer;
+}
+
+.share-icon {
+	display: flex;
+	cursor: pointer;
+}
+
+.ingredient, .url, .recipe, .recipe-tip {
+	padding: 0 100px 0 105px;
+	margin-bottom: 40px;
+	width: 1000px;
+}
+
+.ingredient h3, .url h3, .recipe h3, .recipe-tip h3, .comment h3,
+	.comment-write h3 {
+	font-size: 24px;
+	padding-left: 40px;
+	padding-bottom: 20px;
+}
+
+.ingredient-table {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	padding: 0 40px 18px;
+	font-size: 20px;
+}
+
+.group-title {
+	padding: 10px 18px 4px;
+	display: block;
+}
+
+.ingredient-group {
+	width: 48%;
+}
+
+.ingredient-group li {
+	display: flex;
+	align-items: center;
+	margin: 0 18px;
+	color: #4F4F4F;
+	border-bottom: 1px solid #ececec;
+	box-sizing: border-box;
+	padding: 8px 6px 8px;
+	justify-content: space-between;
+	width: 400px;
+}
+
+.ingredient-group ul {
+	padding-bottom: 60px;
+}
+
+.ingredient-group li .list-name {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	min-width: 40%;
+	padding: 3px 8px 3px 0;
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 999;
+}
+
+.modal-content {
+	background: #fff8ee;
+	padding: 30px;
+	border-radius: 10px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	width: 400px;
+	max-width: 90%;
+}
+
+.ingredient-list a {
+	background: #FFFAE9;
+	border: 1px solid #D94C4C;
+	border-radius: 5px;
+	color: #D94C4C;
+	font-size: 16px;
+	line-height: 19px;
+	padding: 4px 14px;
+	font-weight: 500;
+}
+
+.url-img {
+	background-color: lightgray;
+	width: 640px;
+	height: 360px;
+	align-items: center;
+	justify-content: center;
+	display: flex;
+	margin: 20px auto 100px;
+}
+
+.recipe-tip {
+	padding-bottom: 20px;
+	margin-bottom: 60px;
+}
+
+.recipe-tip h3 {
+	color: #7A9E9F;
+	padding-bottom: 40px;
+}
+
+.recipe .recipe-view {
+	display: flex;
+	padding: 6px 40px 60px 100px;
+	margin: 0 auto;
+	box-sizing: border-box;
+	font-size: 20px;
+}
+
+.step-body {
+	display: table-cell;
+	vertical-align: top;
+	width: 800px;
+	word-break: break-all;
+}
+
+.step-img {
+	width: 280px;
+	height: 220px;
+	padding-left: 60px;
+}
+
+.step-img img {
+	max-width: 100%;
+	height: 100%;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.complete-img {
+	width: 800px;
+	margin: 20px auto 100px;
+	border: 2px solid #ececec;
+	box-shadow: 6px 6px 0px #f0f0f0;
+	padding: 5px;
+	text-align: center;
+}
+
+.complete-img img {
+	width: 100%;
+}
+
+.tip {
+	padding: 6px 80px 60px 40px;
+	margin: 0 auto;
+	overflow-wrap: break-word;
+}
+
+.tip p {
+	font-size: 20px;
+	color: #696969;
+}
+
+.comment {
+	padding: 100px 80px 25px 0px;
+}
+
+.comment .count {
+	color: #D94C4C;
+}
+
+.reply-list {
+	border-bottom: 1px solid #C3B198;
+	display: flex;
+	padding: 18px 0 18px;
+	margin: 0 auto;
+	margin-left: 40px;
+}
+
+.media-left {
+	display: table-cell;
+	padding-right: 12px;
+	padding-left: 20px;
+}
+
+.media-left a {
+	display: block;
+}
+
+.media-object {
+	width: 50px;
+	height: 50px;
+	border-radius: 5px;
+}
+
+.media-body {
+	word-break: break-all;
+	line-height: 22px;
+	font-size: 16px;
+}
+
+.media-body h4 {
+	margin-bottom: 6px;
+	color: #4F4F4F;
+}
+
+.media-body b {
+	margin-right: 10px;
+	color: #7A9E9F;
+}
+
+.media-body span {
+	font-weight: 400;
+}
+
+.media-body .info-date {
+	margin-right: 15px;
+}
+
+.view-btn-more {
+	padding: 15px 0 20px;
+}
+
+.view-btn-more a {
+	display: block;
+	background: #D94C4C;
+	border-radius: 5px;
+	color: #FFFAE9;
+	text-align: center;
+	margin: 0 auto;
+	width: 246px;
+	padding: 8px 0;
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.comment-write-wrapper {
+	display: flex;
+	gap: 20px;
+	justify-content: center;
+	padding: 0 80px 40px 40px;
+}
+
+.comment-upload {
+	display: flex;
+	cursor: pointer;
+	border: 1px solid #D94C4C;
+	align-items: center;
+	width: 100px;
+	height: 100px;
+}
+
+.comment-upload img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.input-group {
+	width: 90%;
+	display: flex;
+	position: relative;
+}
+
+.input-btn {
+	white-space: nowrap;
+	display: table-cell;
+}
+
+.input-btn button {
+	height: 100px;
+	margin-left: -1px;
+}
+
+.comment-submit {
+	color: #FFFAE9;
+	background: #D94C4C;
+	border: 1px solid #D94C4C;
+	border-radius: 0 5px 5px 0;
+	padding: 6px 40px;
+	margin: 0 2px;
+	font-weight: 600;
+	font-size: 18px;
+	text-align: center;
+	cursor: pointer;
+	vertical-align: middle;
+	position: relative;
+	font-family: "Gowun Dodum", sans-serif;
+}
+
+.form-control {
+	display: table-cell;
+	font-family: "Gowun Dodum", sans-serif;
+	align-items: center;
+	padding: 10px 15px;
+	border: 1px solid #D94C4C;
+	color: #4F4F4F;
+	font-size: 16px;
+	border-radius: 5px 0 0 5px;
+}
+
+.reply-input-area {
+	display: flex;
+	width: 900px;
+}
+
+.reply-write-wrapper {
+	display: flex;
+	gap: 20px;
+	/*justify-content: center;*/
+	padding: 30px 0px 20px 0px;
+	width: 1000px;
+}
+
+.ingredient, .url, .recipe, .recipe-tip {
+	width: 1000px;
+}
+
+.tag {
+	padding: 0 80px 60px 40px;
+}
+
+.tag a {
+	margin-right: 10px;
+}
+
+.reply-text {
+	display: flex;
+	justify-content: space-between;
+	gap: 120px;
+	width: 1000px;
+	margin-bottom: 10px;
+}
+
+.comment-img {
+	width: 80px;
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.comment-img img {
+	min-width: 100%;
+	height: 100%;
+	display: block;
+	cursor: pointer;
+}
+
+.comment-write {
+	margin-top: 100px;
+	margin-bottom: 100px;
+}
+
+.reply-item {
+	padding: 10px 0;
+	border-top: 1px solid #C3B198;
+}
+
+.img-modal {
+	display: none;
+	position: fixed;
+	z-index: 9999;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	padding-top: 150px;
+}
+
+.img-modal-content {
+	background: #fff;
+	padding: 30px;
+	border-radius: 10px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	max-width: 60%;
+	max-height: 60%;
+	image-rendering: auto;
+}

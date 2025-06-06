@@ -1,0 +1,345 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+
+<head>
+<meta charset="UTF-8">
+<title th:text="${recipe.title}">레시피</title>
+<link rel="stylesheet" type="text/css" href="/css/recipe_detail.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap"
+	rel="stylesheet">
+</head>
+<body>
+
+
+	<div class="wrapper">
+		<div class="container">
+			<div class="content">
+				<div class="recipe-top">
+					
+					<div class="recipe-img">
+						<img
+							th:src="@{/upload/complete_img/{file}(file=${recipe.completionUrl})}" />
+					</div> <!-- -------- 레시피 이미지 -------- -->
+					
+					<div class="recipe-title">
+						<h2 th:text="${recipe.title}"></h2>
+						<p th:text="${recipe.description}"></p>
+						
+						<div class="user-info">
+							 						
+							<div class = "profile-info">
+								<a class="profile-img" >
+									<img class="profile" 
+th:src="${member != null and member.profile != null} 
+? @{'/upload/' + ${member.profile}} : @{'/upload/default.jpg'}"
+									alt="프로필 이미지"
+							    	style="border-radius: 50%;">
+								</a>
+								<div class="profile-name">
+    <span th:text="${member != null ? member.userId : '알 수 없음'}"></span>
+</div>
+
+
+<!-- 구독 버튼 -->
+<form th:action="@{/subscribe}" method="post">
+    <input type="hidden" name="sub_user" th:value="${loginId}" />
+    <input type="hidden" name="subed_user" th:value="${userId}" />
+    <input type="hidden" name="recipe_id" th:value="${recipeId}" />
+    <button type="submit" name="action" class="subscribe-btn"
+    th:text="${btnLabel}" th:class="${btnClass}"></button>
+</form>
+
+<script th:if="${param.msg}">
+    const msg = /*[[${param.msg}]]*/ '';
+    if (msg === 'subscribed') {
+        alert('구독되었습니다.');
+    } else if (msg === 'unsubscribed') {
+        alert('구독이 해제되었습니다.');
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('msg');
+    window.history.replaceState({}, document.title, url.toString());
+</script>
+
+            				</div><!-- --------- profile-info ---------- -->
+            				
+            					
+            					<div class="write-info">
+								<span>등록일&nbsp;<span
+									th:text="${#dates.format(recipe.recDate, 'yyyy-MM-dd')}"></span></span>
+								<span>조회수&nbsp;<span th:text="${recipe.views}"></span></span> <span>좋아요&nbsp;<span
+									th:text="${likeCount}"></span></span>
+
+								</div> <!-- -------- write-info -------- -->
+            						
+							</div> <!-- -------- user-info -------- -->
+
+							<div class="recipe-info">
+								<div class="info-item">
+									<img src="/images/servingCount.png" alt="인원" />
+									<p>
+										<span th:text="${recipe.servingCount + '인분'}"></span>
+									</p>
+								</div>
+								<div class="info-item">
+									<img src="/images/time.png" alt="시간">
+									<p>
+										<span th:text="${recipe.cookingTime}"></span>
+									</p>
+								</div>
+								
+								<div class="info-item">
+									<img src="/images/level.png" alt="난이도">
+									<p>
+										<span th:text="${recipe.level}"></span>
+									</p>
+								</div> <!-- -------- info-item -------- -->
+
+						</div> <!-- -------- recipe-info -------- -->
+						<div class="recipe-heart">
+							<div class="heart-icon">
+								<a href="javascript:void(0);" id="likeButton"> <img
+									id="likeImg" src="/images/like.png" alt="좋아요 취소">
+								</a>
+							</div>
+							<div class="share-icon" onclick="copyLink()"
+								style="cursor: pointer;" alt="공유">
+								<img src="/images/Share.png" alt="공유" />
+							</div>
+						</div>
+						<!-- recipe-heart -->
+
+						
+					</div> <!-- ------- recipe-title -------- -->
+					
+					<div class="ingredient">
+					<h3>재료</h3>
+					<div class="ingredient-table">
+						<div th:each="entry : ${groupedIngredients}">
+							<div class="ingredient-group">
+								<ul class="ingredient-list">
+									<p class="group-title" th:text="'[' + ${entry.key} + ']'" />
+									<li th:each="ing : ${entry.value}">
+										<div class="list-name">
+											<span th:text="${ing['ingredient_name']}"></span>
+										</div> <span th:text="${ing['quantity1']}"></span> 
+										<a
+										th:href="'https://www.coupang.com/np/search?q=' + ${ing['ingredient_name']}"
+										target="_blank">구매
+										</a>
+									</li>
+								</ul>
+							</div>
+							<!-- ingredient-group -->
+						</div>
+					</div> <!-- ---------div th:each --------- -->
+					<!-- ingredient-table -->
+				</div>
+				<!-- ingredient -->
+				
+				</div> <!-- --------------- recipe-top ---------- -->
+				<div th:if="${embedUrl != null and embedUrl != ''}" class="url"> <!-------- 동영상 --------->
+					<h3>동영상</h3>
+					<div class="url-img">
+						<iframe width="640" height="360" th:src="${embedUrl}"
+							frameborder="0" allowfullscreen></iframe>
+					</div>
+				</div> <!-- --------------- url ---------- -->
+				<div class="recipe">
+					<h3>조리순서</h3>
+					<div th:each="step, stat : ${steps}"
+						class="recipe-view step[[${step.stepId}]]">
+						<div class="step-body">
+							<span><strong>[[${step.stepId}]].</strong>
+								[[${step.explanation}]]</span>
+						</div>
+						<div class="step-img"
+							th:if="${step.image != null and !step.image.isEmpty()}">
+							<img th:src="@{'/upload/step_image/' + ${step.image}}"
+								alt="조리 이미지"
+								th:attr="data-img='/upload/step_image/' + ${step.image}"
+								onclick="openModal(this.getAttribute('data-img'))" />
+						</div>
+						<!-- step-img -->
+					</div>
+					<!-- step -->
+				</div> <!-- --------------- recipe ---------- -->
+				<!------------------- 모달 ------------------->
+				<div id="imageModal" class="img-modal" onclick="closeModal(event)">
+					<img class="img-modal-content" id="modalImg">
+				</div>
+				<div class="complete-img"
+					th:if="${recipe.completionUrl != null and !recipe.completionUrl.isEmpty()}">
+					<img
+						th:src="@{/upload/complete_img/{file}(file=${recipe.completionUrl})}"
+						alt="완성 이미지">
+				</div> <!-- --------------- complete-img ---------- -->
+				<div class="recipe-tip"
+					th:if="${recipe.tip != null and !recipe.tip.isEmpty()}">
+					<h3>요리팁</h3>
+					<div class="tip">
+						<p th:text="${recipe.tip}"></p>
+					</div> <!-- ----- tip ----- -->
+					
+					<!-- ------------- 태그 ----------------->
+					<div class="tag" th:if="${tagList != null}">
+					<a th:each="tag : ${tagList}" th:href="@{'/search?tag=' + ${tag}}"
+						th:text="${tag}"></a>
+				</div>
+					<!-- ------------- 태그 ----------------->
+				</div> <!-- --------------- recipe-tip ---------- -->
+			</div>
+			<!-- content -->
+
+			<div class="comment-wrap">
+							<div class="comment">
+							<h3>댓글&nbsp;<span class="count" th:text="${totalVisibleCount}">0</span></h3>
+							
+							<div class="comment-list" th:each="commentMap : ${commentList}">
+
+								<div class="reply-list">
+									<!-- ----------- 작성자 프로필 이미지 ---------- -->
+									<div class="media-left">
+										<a>
+											<img class="media-object"
+												th:src="@{'/upload/' + ${commentMap.profile}}"
+											style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">	
+										</a>
+									</div> <!-- media-left -->
+									<!-- ----------- 작성자 프로필 이미지 ---------- -->
+									<!-- --------------- 댓글 --------------- -->
+									<div class="media-body"
+					                     style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+					                 	<div style="flex: 1;">
+					                 	<!-- ------------ 작성자, 작성 일시, 답글/신고/삭제 ------------- -->
+					                 		<h4> 
+					                 			<b class="info-name" th:text="${commentMap.comment.userId}"></b>
+					                 			<span class="info-date" 
+					                 				th:text="${#dates.format(commentMap.comment.commentCreate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+					                 			<a class="toggle-reply">답글</a>
+					                 			<span style="margin: 0 5px;">|</span>
+					                 		</h4>
+					                 		<!-- ------------ 작성자, 작성 일시, 답글/신고/삭제 ------------- -->
+					                 		<!-- ----------- 댓글 내용 ------------- -->
+					                 		<div class="reply-text">
+					                            <p th:text="${commentMap.comment.comment}"></p>
+					
+					                            <div class="comment-img" 
+					                            th:if="${commentMap.comment.commentImage != null}">
+					                                <img th:src="@{'/upload/' + ${commentMap.comment.commentImage}}"
+					                             	style="border-radius: 5px;"
+					                                th:attr="data-img='/upload/' + ${commentMap.comment.commentImage}"
+					                                onclick="openModal(this.getAttribute('data-img'))">
+					                            </div>
+					                        </div> <!-- reply-text -->
+					                 	</div> <!-- style="flex: 1;" -->
+                    				</div> <!-- media-body -->
+                    				<!-- --------------- 댓글 --------------- -->
+								</div> <!-- reply-list -->
+							</div> <!-- comment-list -->
+							
+								<!-- ------------------ 댓글 전체보기 버튼 ------------------ -->
+<div class="view-btn-more" style="padding-bottom: 20px;"
+     th:if="${!showAll and totalVisibleCount > 3}">
+    <a th:href="@{/recipe_detail(recipe_id=${recipeId}, showAll=true)}">댓글 전체보기</a>
+</div>
+							</div> <!-- comment -->
+				
+			</div> <!-- --------------- comment-wrap ---------- -->
+
+			<div class="comment-write">
+				<h3>댓글 작성</h3>
+				
+				<form class="comment-write-wrapper" method="post"
+          th:action="@{/comment/write}" enctype="multipart/form-data"
+          onsubmit="return validateCommentForm()">
+          
+          		<!-- --------- 이미지 업로드 ---------- -->
+          			<label class="comment-upload">
+          					<input type="file" name="commentImage"  accept="images/*" style="display: none;"
+				                   onchange="previewImage(this)">
+				            <img id="previewImg" src="/images/file_img.png" alt="사진 미리보기"
+				                 width="100" height="100" />
+          			</label>
+          			<!-- --------- 이미지 업로드 ---------- -->
+          			<!-- --------- 댓글 입력 ---------- -->
+          			<div class="input-group">
+          				<textarea class="form-control" id="commentInput" name="comment"
+							placeholder="댓글을 남겨주세요!"
+							style="resize: none; width: 100%; height: 100px;"></textarea>
+							<!--------------- recipe_id 전달 ----------------->
+						<input type="hidden" name="recipeId" th:value="${recipe.recipeId}" /> 
+							<span class="input-btn">
+							<button type="submit" class="comment-submit">등록</button>
+						</span>
+          			</div>
+          			<!-- --------- 댓글 입력 ---------- -->
+          		</form>
+			</div> <!-- --------------- comment-write ---------- -->
+
+
+		</div>
+		<!-- container -->
+
+	</div>
+	<!-- wrapper -->
+
+
+
+	<!-- -------------------------------script----------------------------- -->
+	<script>
+		// //////////// 링크 복사 ///////////
+function copyLink() {
+	  const url = window.location.href; // 현재 페이지의 URL
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                alert("링크가 복사되었습니다!");
+            })
+            .catch((err) => {
+                console.error("복사 실패:", err);
+                alert("복사에 실패했습니다.");
+            });
+	}
+	
+	// ///////// 이미지 클릭 시 확대 //////////
+function openModal(imgSrc) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImg");
+    modalImg.src = imgSrc;
+    modal.style.display = "flex";
+}
+
+function closeModal(event) {
+    // 이미지 자체 클릭한 경우는 닫지 않음
+    if (event.target.id === "modalImg") return;
+    document.getElementById("imageModal").style.display = "none";
+}
+
+ // ///////// 댓글 폼 이미지 선택 시 기본 이미지에서 선택한 이미지로 변경
+ function previewImage(input) {
+    const preview = document.getElementById('previewImg');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// ////////// 댓글 유효성 검사(빈 폼X) ///////
+function validateCommentForm() {
+    const commentText = document.getElementById('commentInput').value.trim();
+    if (commentText === "") {
+        alert("댓글을 입력해주세요.");
+        return false; // 폼 전송 중지
+    }
+    return true; // 폼 전송 허용
+}
+</script>
+</body>
+</html>

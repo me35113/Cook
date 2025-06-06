@@ -1,0 +1,182 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카테고리</title>
+<link rel="stylesheet" type="text/css" href="css/category.css">
+</head>
+<body>
+
+
+	<div class="wrapper">
+		<form id="filterForm" method="get" action="/category">
+			<div class="filter-section" id="filters">
+
+				<!-- 종류별 -->
+				<div class="filter-box">
+					<h3>종류별</h3>
+					<label><input type="checkbox" name="type" value="반찬"
+					th:checked="${param.type != null and #lists.contains(param.type, '반찬')}"
+						onchange="applyFilter()">반찬</label> 
+						<label><input
+						type="checkbox" name="type" value="국/탕"
+						th:checked="${param.type != null and #lists.contains(param.type, '국/탕')}"
+						 onchange="applyFilter()">국/탕</label>
+					<label><input type="checkbox" name="type" value="디저트"
+					th:checked="${param.type != null and #lists.contains(param.type, '디저트')}"
+						onchange="applyFilter()">디저트</label> <label><input
+						type="checkbox" name="type" value="면/파스타" 
+						th:checked="${param.type != null and #lists.contains(param.type, '면/파스타')}"
+						onchange="applyFilter()">면/파스타</label>
+					<label><input type="checkbox" name="type" value="밥/죽/떡"
+					th:checked="${param.type != null and #lists.contains(param.type, '밥/죽/떡')}"
+						onchange="applyFilter()">밥/죽/떡</label>
+				</div>
+
+				<div class="filter-box ingredients">
+					<h3>재료별</h3>
+					<div class="filter-items">
+						<label><input type="checkbox" name="food_group_id"
+							value="1" 
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '1')}"
+							onchange="applyFilter()">소고기</label> <label><input
+							type="checkbox" name="food_group_id" value="2"
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '2')}"
+							onchange="applyFilter()">돼지고기</label> <label><input
+							type="checkbox" name="food_group_id" value="3"
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '3')}"
+							onchange="applyFilter()">닭고기</label> <label><input
+							type="checkbox" name="food_group_id" value="4"
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '4')}"
+							onchange="applyFilter()">채소류</label> <label><input
+							type="checkbox" name="food_group_id" value="5"
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '5')}"
+							onchange="applyFilter()">해물류</label> <label><input
+							type="checkbox" name="food_group_id" value="6"
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '6')}"
+							onchange="applyFilter()">달걀/유제품</label> <label><input
+							type="checkbox" name="food_group_id" value="7"
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '7')}"
+							onchange="applyFilter()">버섯류</label> 
+							<label><input
+							type="checkbox" name="food_group_id" value="8"
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '8')}"
+							onchange="applyFilter()">콩/견과류</label>
+							<label><input type="checkbox" name="food_group_id" value="9" 
+							th:checked="${param.food_group_id != null and #lists.contains(param.food_group_id, '9')}"
+							onchange="applyFilter()">과일류</label>
+					</div>
+				</div>
+
+				<div class="filter-box">
+					<h3>나라별</h3>
+					<label><input type="checkbox" name="country" value="한식"
+					th:checked="${param.country != null and #lists.contains(param.country, '한식')}"
+						onchange="applyFilter()">한식</label> <label><input
+						type="checkbox" name="country" value="일식" 
+						th:checked="${param.country != null and #lists.contains(param.country, '일식')}"
+						onchange="applyFilter()">일식</label>
+					<label><input type="checkbox" name="country" value="중식"
+					th:checked="${param.country != null and #lists.contains(param.country, '중식')}"
+						onchange="applyFilter()">중식</label> <label><input
+						type="checkbox" name="country" value="베트남"
+						th:checked="${param.country != null and #lists.contains(param.country, '베트남')}"
+						onchange="applyFilter()">베트남</label> <label><input
+						type="checkbox" name="country" value="남미" 
+						th:checked="${param.country != null and #lists.contains(param.country, '남미')}"
+						onchange="applyFilter()">남미</label>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="recipe-count">
+		총 <strong th:text="${totalCount}"></strong>개의 레시피가 있습니다.
+	</div>
+
+	<div class="recipe-grid">
+
+		<!-- 조건에 맞는 레시피가 없을 경우 -->
+		<div th:if="${#lists.isEmpty(recipes)}">
+			<p>해당 조건에 맞는 레시피가 없습니다.</p>
+		</div>
+
+		<!-- 레시피 목록 출력 -->
+		<div class="recipe-card" th:each="recipe : ${recipes}"
+			th:onclick="'viewRecipe(' + ${recipe.recipeId} + ')'"
+			style="cursor: pointer;">
+			<a th:href="@{/recipe_detail(recipe_id=${recipe.recipeId})}"> 
+			<div class="recipe-thumbnail">
+				<img
+					th:src="@{/upload/complete_img/{file}(file=${recipe.completionUrl})}"
+					alt="썸네일">
+			</div>
+			<div class="recipe-title" style="font-size: 16px;"
+				th:text="${recipe.title}">레시피 제목</div>
+			<div class="recipe-meta">
+				<h4 style="font-size: 14px;" th:text="${recipe.userId}">작성자</h4>
+				<span class="heart">❤</span> <font color="red"
+					th:text="${likeCounts[recipe.recipeId]}"></font> &nbsp;&nbsp;&nbsp;
+				조회수 <span
+					th:text="${recipe.views}"></span>
+			</div>
+			</a>
+		</div>
+	</div>
+
+	<!-- PREV -->
+	<div>
+	<ul class="pagination">
+		<!-- PREV -->
+		<li class="page-item" th:if="${result.prevPage}">
+			<a th:href="@{/category(
+				page=${result.prevPage.pageNumber + 1},
+				type=${param.type},
+				food_group_id=${param.food_group_id},
+				country=${param.country}
+			)}">PREV</a>
+		</li>
+
+		<!-- 페이지 번호 -->
+		<li class="page-item" th:each="p : ${result.pageList}"
+			th:classappend="${p.pageNumber + 1 == result.currentPageNum} ? 'active' : ''">
+			<a th:href="@{/category(
+				page=${p.pageNumber + 1},
+				type=${param.type},
+				food_group_id=${param.food_group_id},
+				country=${param.country}
+			)}">[[${p.pageNumber + 1}]]</a>
+		</li>
+
+		<!-- NEXT -->
+		<li class="page-item" th:if="${result.nextPage}">
+			<a th:href="@{/category(
+				page=${result.nextPage.pageNumber + 1},
+				type=${param.type},
+				food_group_id=${param.food_group_id},
+				country=${param.country}
+			)}">NEXT</a>
+		</li>
+	</ul>
+</div>
+
+	<script>
+  // 브라우저의 뒤로가기/앞으로가기 시 발생하는 이벤트 감지
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (window.performance && performance.navigation.type === 2)) {
+      // 뒤로가기(persisted = true) 또는 history navigation(type 2)이면 강제 새로고침
+      window.location.reload();
+    }
+  });
+
+// ////////// 체크박스 필터링 /////////
+function applyFilter() {
+    document.getElementById('filterForm').submit();
+}
+</script>
+
+
+
+</body>
+</html>

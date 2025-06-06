@@ -6,7 +6,6 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/logintop.css}">
     <style>
-        /* 중복확인 메시지 박스 스타일 */
         #idCheckResult {
             padding: 8px;
             min-height: 24px;
@@ -34,13 +33,13 @@
     </div>
 </div>
 
-<form th:action="@{/signup}" method="post" th:object="${signupRequestDto}">
+<form th:action="@{/signup}" method="post" th:object="${signupRequestDto}" enctype="multipart/form-data">
     <table border="1" cellpadding="5" cellspacing="0" style="width: 500px; margin: 0 auto;">
         <tr>
             <th>아이디</th>
             <td>
                 <input type="text" th:field="*{userId}" placeholder="아이디 입력" required autocomplete="username" />
-                <button type="button" class="check-btn" onclick="checkUserId()">중복확인</button>
+                <button type="button" onclick="checkUserId()">중복확인</button>
                 <div id="idCheckResult"></div>
             </td>
         </tr>
@@ -57,8 +56,14 @@
             <td><input type="email" th:field="*{email}" placeholder="이메일 입력" required /></td>
         </tr>
         <tr>
-            <th>프로필 이미지 URL</th>
-            <td><input type="text" th:field="*{profile}" placeholder="프로필 입력" /></td>
+            <th>프로필 이미지</th>
+            <td>
+                <input type="file" id="profileImageInput" name="profileImage" accept="image/*" onchange="previewProfileImage()" />
+                <!-- hidden 필드는 서버에서 이미지 경로 따로 관리하는 경우 필요하면 유지 -->
+                <input type="hidden" th:field="*{profile}" />
+                <br>
+                <img id="profilePreview" src="#" alt="미리보기" style="display:none; max-width:100px; max-height:100px;" />
+            </td>
         </tr>
         <tr>
             <th>성별</th>
@@ -72,11 +77,15 @@
         </tr>
         <tr>
             <th>우편번호</th>
-            <td><input type="text" th:field="*{zipcode}" placeholder="우편번호 입력" /></td>
+            <td>
+                <input type="text" id="zipcode" th:field="*{zipcode}" placeholder="우편번호 입력" readonly />
+                <button type="button" onclick="openAddressPopup()">주소 찾기</button>
+                <div id="zipcodeResult" style="margin-top:5px; color:gray;"></div>
+            </td>
         </tr>
         <tr>
             <th>주소</th>
-            <td><input type="text" th:field="*{address}" placeholder="주소 입력" /></td>
+            <td><input type="text" id="address" th:field="*{address}" placeholder="주소 입력" readonly /></td>
         </tr>
         <tr>
             <th>직업</th>
@@ -107,10 +116,11 @@
     </table>
 </form>
 
-<!-- 아이디 중복확인 스크립트 -->
+<!-- 아이디 중복확인 -->
 <script>
 function checkUserId() {
-    const userId = document.querySelector('[name="userId"]').value.trim();
+    const userIdInput = document.querySelector('input[name="userId"]');
+    const userId = userIdInput ? userIdInput.value.trim() : "";
     const resultDiv = document.getElementById("idCheckResult");
 
     resultDiv.className = "";
@@ -140,5 +150,40 @@ function checkUserId() {
         });
 }
 </script>
+
+<!-- 프로필 이미지 미리보기 -->
+<script>
+function previewProfileImage() {
+    const input = document.getElementById('profileImageInput');
+    const preview = document.getElementById('profilePreview');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+    }
+}
+</script>
+
+<!-- 주소 검색 팝업 열기 -->
+<script>
+function openAddressPopup() {
+    const url = window.location.origin + '/addressSearchPopup';
+    const popup = window.open(url, '주소검색', 'width=600,height=400,scrollbars=yes');
+    if (!popup) {
+        alert('팝업이 차단되었습니다.');
+    } else {
+        popup.focus();
+    }
+}
+
+</script>
+
 </body>
 </html>

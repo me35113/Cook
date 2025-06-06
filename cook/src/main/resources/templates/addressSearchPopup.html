@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주소 검색</title>
+</head>
+<body>
+    <h3>우편번호로 주소 검색</h3>
+    <input type="text" id="zipcodeInput" placeholder="우편번호 입력 (예: 12345)">
+    <button onclick="searchAddress()">검색</button>
+    <div id="addressDisplay" style="margin-top: 10px; color: blue;"></div>
+    <button id="selectBtn" style="margin-top: 10px;">선택</button>
+
+    <script>
+        function searchAddress() {
+            const zipcode = document.getElementById('zipcodeInput').value.trim();
+            if (!zipcode) {
+                alert("우편번호를 입력하세요.");
+                return;
+            }
+
+            fetch('/searchAddress?zipcode=' + encodeURIComponent(zipcode))
+                .then(response => response.text())
+                .then(address => {
+                    const display = document.getElementById("addressDisplay");
+                    if (address === "주소 없음") {
+                        display.textContent = "주소를 찾을 수 없습니다.";
+                    } else {
+                        display.textContent = address;
+                        document.getElementById("selectBtn").onclick = function () {
+                            window.opener.document.getElementById("zipcode").value = zipcode;
+                            window.opener.document.getElementById("address").value = address;
+                            window.close();
+                        };
+                    }
+                })
+                .catch(err => {
+                    alert("오류 발생");
+                    console.error(err);
+                });
+        }
+    </script>
+</body>
+</html>

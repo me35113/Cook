@@ -532,26 +532,35 @@ body {
 </head>
 
 <body>
+    <!-- Spring Boot 컨트롤러로 전송하도록 action 변경 -->
+    <form method="post" action="/registration" th:object="${recipe}" enctype="multipart/form-data" onsubmit="beforeSubmit(); return false;">
 
-    <form method="post" action="recipe_proc.jsp" enctype="multipart/form-data">
         <input type="hidden" name="ingredients" id="ingredients-hidden">
         <input type="hidden" name="steps" id="steps-hidden">
         
-        <input type="hidden" name="user_id" value="abcd"> <!-- 임시로 고정 -->
+        <!-- 사용자 ID는 실제로는 세션에서 가져와야 함 -->
+        <input type="hidden" name="userId" value="abcd"> <!-- 임시로 고정 -->
 
         <div class="wrapper">
             <div class="container">
                 <div class="panel left-panel">왼쪽 패널</div>
                 <div class="content">
                     <div class="recipe-form">
+                        <!-- 성공/에러 메시지 표시 -->
+                        <div th:if="${message}" class="alert alert-success" style="color: green; padding: 10px; margin: 10px 0; border: 1px solid #d4edda; background-color: #d1ecf1; border-radius: 5px;">
+                            <span th:text="${message}"></span>
+                        </div>
+                        <div th:if="${error}" class="alert alert-error" style="color: red; padding: 10px; margin: 10px 0; border: 1px solid #f5c6cb; background-color: #f8d7da; border-radius: 5px;">
+                            <span th:text="${error}"></span>
+                        </div>
+
                         <div class="form-header">레시피 등록</div>
 
                         <!-- 레시피 제목 + 대표 이미지 -->
                         <div class="form-group">
                             <div class="form-label">레시피 제목</div>
                             <div class="form-input" style="display: flex; align-items: center; gap: 50px;">
-                                <input type="text" class="text-input" name="title" placeholder="예) 소고기 미역국 끓이기">
-                                
+                                <input type="text" class="text-input" name="title" th:field="*{title}" placeholder="예) 소고기 미역국 끓이기" required>
                             </div>
                         </div>
 
@@ -559,7 +568,7 @@ body {
                         <div class="form-group">
                             <div class="form-label">요리 소개</div>
                             <div class="form-input">
-                                <textarea class="textarea-input" name="description" placeholder="이 레시피의 탄생배경을 적어주세요."></textarea>
+                                <textarea class="textarea-input" name="description" th:field="*{description}" placeholder="이 레시피의 탄생배경을 적어주세요." required></textarea>
                             </div>
                         </div>
 
@@ -568,7 +577,7 @@ body {
                             <div class="form-label">동영상</div>
                             <div class="form-input">
                                 <div class="video-upload">
-                                    <textarea type="text" class="video-input" name="videos_url" placeholder="유튜브 주소 입력하세요"></textarea>
+                                    <textarea type="text" class="video-input" name="videosUrl" th:field="*{videosUrl}" placeholder="유튜브 주소 입력하세요"></textarea>
                                     <div class="video-upload-container">
                                         <input type="file" class="video-file-input" accept="video/*" style="display: none;" onchange="previewVideo(this)">
                                         <button type="button" class="video-button" onclick="this.parentElement.querySelector('.video-file-input').click()">
@@ -632,29 +641,36 @@ body {
                             <div class="form-label">요리정보</div>
                             <div class="form-input">
                                 <div class="cooking-info-section">
-                                    <div class="info-item">
-                                        <div class="info-title">인원</div>
-                                        <div class="info-input-container">
-                                            <input type="text" class="info-input" name="servingCount">
-                                        </div>
-                                    </div>
+                                    <!-- 기존 코드에서 이 부분을 찾아서 수정하세요 -->
+<div class="info-item">
+    <div class="info-title">인원</div>
+    <div class="info-input-container">
+        <input type="number" class="info-input" name="servingCount" th:field="*{servingCount}" 
+               value="1" min="1" max="10" required>
+    </div>
+</div>
                                     <div class="info-item">
                                         <div class="info-title">시간</div>
                                         <div class="info-input-container">
-                                            <input type="text" class="info-input" name="cooking_time">
+                                            <input type="text" class="info-input" name="cookingTime" th:field="*{cookingTime}" placeholder="예) 30분" required>
                                         </div>
                                     </div>
                                     <div class="info-item">
                                         <div class="info-title">난이도</div>
                                         <div class="info-input-container">
-                                            <input type="text" class="info-input" name="level">
+                                            <select class="info-input" name="level" th:field="*{level}" required>
+                                                <option value="">선택하세요</option>
+                                                <option value="쉬움">쉬움</option>
+                                                <option value="보통">보통</option>
+                                                <option value="어려움">어려움</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 재료정보 섹션 -->
+                        <!-- 재료정보 섹션 (기존과 동일) -->
                         <div class="form-group">
                             <div class="form-label">재료정보</div>
                             <div class="form-input" id="ingredients-container">
@@ -668,32 +684,16 @@ body {
                                             <input type="text" name="quantity3[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) (비고)">
                                         </div>
                                     </div>
-                                    <div class="ingredient-row" style="margin-bottom: 10px;">
-                                        <div style="display: grid; grid-template-columns: 200px 1fr 100px 100px 1fr; gap: 10px; border-radius: 0px; overflow: hidden;">
-                                            <input type="text" name="ingredient_name[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) 양파">
-                                            <input type="text" name="quantity1[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="10(수량)">
-                                            <input type="text" name="quantity2[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) g,ml">
-                                            <input type="text" name="quantity3[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) (비고)">
-                                        </div>
-                                    </div>
-                                    <div class="ingredient-row" style="margin-bottom: 10px;">
-                                        <div style="display: grid; grid-template-columns: 200px 1fr 100px 100px 1fr; gap: 10px; border-radius: 0px; overflow: hidden;">
-                                            <input type="text" name="ingredient_name[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) 마늘">
-                                            <input type="text" name="quantity1[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="10(수량)">
-                                            <input type="text" name="quantity2[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) g,ml">
-                                            <input type="text" name="quantity3[]" style="background-color: #f1f1f1; padding: 8px; border: 1px solid #ddd; text-align: center; border-radius: 5px;" placeholder="예) (비고)">
-                                        </div>
-                                    </div>
+                                    <!-- 추가 재료 행들... -->
                                 </div>
-                                <!-- 추가 버튼 -->
                                 <div style="text-align: center; margin-top: 20px;">
-                                    <button class="add-btn" type="button" onclick="addIngredientGroup()" >그룹 추가</button>
+                                    <button class="add-btn" type="button" onclick="addIngredientGroup()">그룹 추가</button>
                                     <button class="add-btn" type="button" onclick="addIngredientRow(this)">재료 추가</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 요리 순서 섹션 -->
+                        <!-- 요리 순서 섹션 (기존과 동일) -->
                         <div class="recipe-steps-section">
                             <div class="horizontal-layout">
                                 <div class="label-column">요리순서</div>
@@ -716,31 +716,27 @@ body {
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="button" onclick="addStep()" style="padding: 8px 20px; border: 1px solid #d94c4c; border-radius: 5px; 
-                                        cursor: pointer; display: block; width: 120px; margin: 20px auto; 
-                                        color: #D94C4C; background-color: #fffae9;
-                                        font-size: 14px; font-weight: bold;">순서추가</button>
+                                        <button type="button" onclick="addStep()" style="padding: 8px 20px; border: 1px solid #d94c4c; border-radius: 5px; cursor: pointer; display: block; width: 120px; margin: 20px auto; color: #D94C4C; background-color: #fffae9; font-size: 14px; font-weight: bold;">순서추가</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 요리완성사진 섹션 -->
-                        <div class="completed-photos-section">
-                            <div class="horizontal-layout">
-                                <div class="label-column">요리완성사진</div>
-                                <div class="content-column">
-                                    <div class="completed-photos-container">
-                                        <div class="completed-photo-item">
-                                            <input type="file" name="complete_img" class="completed-file-input" accept="image/*" style="display: none;" onchange="previewCompletedImage(this)">
-                                            <div class="photo-icon">+</div>
-                                            <img class="completed-preview-image" style="max-width: 100%; max-height: 100%; display: none;" />
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                   <!-- 요리완성사진 섹션 수정 -->
+<div class="completed-photos-section">
+    <div class="horizontal-layout">
+        <div class="label-column">요리완성사진</div>
+        <div class="content-column">
+            <div class="completed-photos-container">
+                <div class="completed-photo-item" onclick="document.querySelector('input[name=complete_img]').click();">
+                    <input type="file" name="complete_img" class="completed-file-input" accept="image/*" style="display: none;" onchange="previewCompletedImage(this)" required>
+                    <div class="photo-icon">+</div>
+                    <img class="completed-preview-image" style="max-width: 100%; max-height: 100%; display: none;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                         <!-- 요리팁 섹션 -->
                         <div class="cooking-tip-section">
@@ -748,7 +744,7 @@ body {
                                 <div class="label-column">요리팁</div>
                                 <div class="content-column">
                                     <div class="cooking-tip-container">
-                                        <textarea class="cooking-tip-input" name="tip" placeholder="예) 고기 잡내는 이렇게 제거해요!"></textarea>
+                                        <textarea class="cooking-tip-input" name="tip" th:field="*{tip}" placeholder="예) 고기 잡내는 이렇게 제거해요!"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -760,7 +756,7 @@ body {
                                 <div class="label-column">태그</div>
                                 <div class="content-column">
                                     <div class="tag-container">
-                                        <input type="text" class="tag-input" name="tags" placeholder="">
+                                        <input type="text" class="tag-input" name="tags" th:field="*{tags}" placeholder="">
                                     </div>
                                     <div class="tag-helper-text">주재료, 목적, 효능, 대상 등을 태그로 남겨주세요. 예) 닭고기, 다이어트, 비만, 청소년, 간식거리, 이유식</div>
                                 </div>
@@ -769,7 +765,7 @@ body {
 
                         <!-- 버튼 그룹 -->
                         <div class="button-group">
-                            <button type="button" class="save-temp-btn" onclick="beforeSubmit()">저장</button>
+                            <button type="submit" class="save-temp-btn">저장</button>
                             <button type="reset" class="cancel-btn">취소</button>
                         </div>
                     </div>
@@ -780,6 +776,20 @@ body {
     </form>
 
     <script type="text/javascript">
+    
+       function previewCompletedImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = input.parentElement.querySelector('.completed-preview-image');
+                    const icon = input.parentElement.querySelector('.photo-icon');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    icon.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     
 	//네비게이션 바 크기 동적으로 가져오기
     function adjustBodyPadding() {
@@ -845,35 +855,36 @@ body {
         console.log("✅ 직렬화된 재료 데이터:", ingredientsJson);
     }
 
-    // 요리 순서 직렬화 함수 (텍스트와 이미지 포함)
-    function serializeSteps() {
-        const steps = [];
-        const stepInputs = document.querySelectorAll(".step-item");
-        
-        stepInputs.forEach((item, index) => {
-        	const explanation = item.querySelector(".step-text-input")?.value.trim() || "";
-            const imageInput = item.querySelector(".step-file-input");
-            let imageKey = "";
+// 요리 순서 직렬화 함수 (텍스트와 이미지 포함) - 수정된 버전
+function serializeSteps() {
+    const steps = [];
+    const stepInputs = document.querySelectorAll(".step-item");
+    
+    stepInputs.forEach((item, index) => {
+        const explanation = item.querySelector(".step-text-input")?.value.trim() || "";
+        const imageInput = item.querySelector(".step-file-input");
+        let imageKey = "";
 
-            if (imageInput && imageInput.files[0]) {
-                imageKey = "step_image_" + index; // 각 이미지 입력 필드에 고유한 이름 부여
-                imageInput.setAttribute("name", imageKey);
-            }
+        if (imageInput && imageInput.files[0]) {
+            imageKey = "step_image_" + index; // 각 이미지 입력 필드에 고유한 이름 부여
+            imageInput.setAttribute("name", imageKey);
+        }
 
-            if (explanation || imageKey) { // 텍스트나 이미지가 있으면 추가
-                steps.push({
-                    explanation: explanation,
-                    image: imageKey // 파일 입력 필드의 이름 저장 (proc.jsp에서 파일을 찾기 위해)
-                });
-            }
-        });
-        
-        // JSON으로 변환
-        const stepsJson = JSON.stringify(steps);
-        document.getElementById("steps-hidden").value = stepsJson;
+        // 설명이 있으면 항상 추가 (이미지는 선택사항)
+        if (explanation) {
+            steps.push({
+                explanation: explanation,
+                image: imageKey // 파일 입력 필드의 이름 저장
+            });
+        }
+    });
+    
+    // JSON으로 변환
+    const stepsJson = JSON.stringify(steps);
+    document.getElementById("steps-hidden").value = stepsJson;
 
-        console.log("✅ 직렬화된 요리 순서:", stepsJson);
-    }
+    console.log("✅ 직렬화된 요리 순서:", stepsJson);
+}
 
     // 동영상 미리보기 함수
     function previewVideo(input) {
@@ -914,9 +925,9 @@ body {
 
     // 초기 로드 시 기존 요소에 이벤트 리스너 적용
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.step-image-upload, .completed-photo-item, .image-upload, .video-upload-container').forEach(item => {
-            attachEventListeners(item);
-        });
+        document.querySelectorAll('.step-image-upload, .image-upload, .video-upload-container').forEach(item => {
+      attachEventListeners(item);
+  });
     });
 
     // 기존 스텝 및 재료 관련 함수
@@ -1097,6 +1108,7 @@ body {
 
         return row;
     }
+    
     
     </script>
 </body>

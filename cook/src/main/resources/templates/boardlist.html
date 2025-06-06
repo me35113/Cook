@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+    <link rel="stylesheet" href="/css/top.css">
+</head>
+<body>
+
+<!-- ✅ 상단 고정 바 -->
+<div class="top-bar">
+    <!-- 왼쪽 메뉴 -->
+    <div class="nav-menu">
+        <a href="/">홈</a>
+        <a href="/boardlist">게시판</a>
+        <a href="#">문의하기</a>
+    </div>
+
+    <!-- 가운데 로고 및 텍스트 -->
+    <div class="logo">
+        <img src="/images/logo.jpg" alt="로고">
+    </div>
+</div>
+
+<!-- ✅ 게시판 콘텐츠 -->
+<div class="wrapper">
+    <div class="content">
+        <div class="board-container">
+            <div class="board-title">게시판</div>
+
+            <div class="board-search">
+                <input type="text" placeholder="검색어를 입력">
+                <button>🔍</button>
+            </div>
+
+			<table>
+			    <thead>
+			        <tr>
+			            <th>No</th>
+			            <th>제목</th>
+			            <th>작성자</th>
+			            <th>작성일</th>
+			            <th>조회수</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <tr th:each="item : ${list}">
+			            <td th:text="${item.boardId}"></td>
+			            <td>
+			                <a th:href="@{'/boardlist_read'(board_id=${item.boardId})}" th:text="${item.title}"></a>
+			            </td>
+			            <td th:text="${item.userId}"></td>
+			            <td th:text="${#temporals.format(item.boardCreate, 'yyyy-MM-dd')}"></td>
+			            <td th:text="${item.viewCount}"></td>
+			        </tr>
+			    </tbody>
+			</table>
+
+            <div class="pagination">
+                <span>&lt; 이전</span>
+                <span>1</span>
+                <a href="#">다음 &gt;</a>
+            </div>
+
+            <div class="write-button">
+				<button onclick="location.href='/boardlist_write'">작성하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ 게시판 스타일 (기존 유지 + body padding-top 조정만 추가) -->
+<style>
+    body {
+        padding-top: 130px; /* 상단바 공간 확보 */
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .wrapper {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content {
+        flex: 1;
+    }
+
+    .board-container {
+        padding: 0 100px;
+    }
+
+    .board-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #D94C4C;
+        margin-bottom: 30px;
+        margin-top: 20px;
+    }
+
+    .board-search {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+
+    .board-search input[type="text"] {
+        padding: 6px;
+        width: 200px;
+        border: 1px solid #ccc;
+        border-radius: 5px 0 0 5px;
+    }
+
+    .board-search button {
+        background-color: #D94C4C;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 0 5px 5px 0;
+        color: white;
+        cursor: pointer;
+    }
+
+	table {
+	        width: 100%;
+	        border-collapse: collapse; /* 선이 겹치지 않도록 */
+	    }
+
+	    th, td {
+	        border: 1px solid #ccc;   /* 모든 셀 테두리 */
+	        padding: 12px;
+	        text-align: center;
+	        vertical-align: middle;
+	    }
+
+	    thead {
+	        background-color: #f5f5f5;
+	    }
+
+    th.no, td.no {
+        width: 5%;
+        text-align: center;
+    }
+
+    th.title, td.title {
+        text-align: left;
+        padding-left: 20px;
+        width: 55%;
+    }
+
+    th.author, td.author {
+        text-align: center;
+        width: 10%;
+    }
+
+    th.date, td.date {
+        text-align: center;
+        width: 13%;
+    }
+
+    th.views, td.views {
+        text-align: center;
+        width: 12%;
+    }
+
+    .pagination {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .write-button {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .write-button button {
+        background-color: #D94C4C;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    a:hover {
+        text-decoration: underline;
+        color: #D94C4C;
+    }
+</style>
+
+</body>
+</html>

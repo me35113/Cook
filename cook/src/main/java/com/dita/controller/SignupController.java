@@ -2,10 +2,14 @@ package com.dita.controller;
 
 import com.dita.domain.Member;
 import com.dita.domain.SignupRequestDto;
+import com.dita.domain.Zipcode;
+import com.dita.persistence.ZipcodeRepository;
 import com.dita.service.KakaoLogoutService;
 import com.dita.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -100,6 +104,22 @@ public class SignupController {
 
         session.invalidate();
         return "redirect:/login";
+    }
+    
+    @Autowired
+    private ZipcodeRepository zipcodeRepository;
+    
+    @GetMapping("/searchAddress")
+    @ResponseBody
+    public String searchAddress(@RequestParam String zipcode) {
+        return zipcodeRepository.findByZipcode(zipcode.trim())
+                .map(Zipcode::getAddress)
+                .orElse("주소 없음");
+    }
+    
+    @GetMapping("/addressSearchPopup")
+    public String addressSearchPopup() {
+        return "addressSearchPopup";  // src/main/resources/templates/addressSearchPopup.html 뷰 파일명
     }
 
     

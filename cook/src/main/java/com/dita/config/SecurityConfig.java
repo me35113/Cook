@@ -30,7 +30,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/signup", "/checkUserId", "/css/**", "/images/**").permitAll()
+                // 여기에 /addressSearchPopup 추가
+                .requestMatchers("/", "/login", "/signup", "/checkUserId","/boardlist_read", 
+                		"/searchAddress", "/addressSearchPopup","/boardlist_write","/boardlist","/registration","/category",
+                		"/css/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
