@@ -1,7 +1,8 @@
 package com.dita.service;
 
 import com.dita.domain.Board;
-import com.dita.repository.BoardRepository;
+import com.dita.persistence.BoardRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

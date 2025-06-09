@@ -2,7 +2,7 @@ package com.dita.controller;
 
 import com.dita.domain.Board;
 import com.dita.domain.Report;
-import com.dita.repository.ReportRepository;
+import com.dita.persistence.ReportRepository;
 import com.dita.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

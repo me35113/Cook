@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,14 +19,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "member_sub")
+@IdClass(MemberSubId.class) 
 public class MemberSub {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	
 	@Column(name = "sub_user")
 	private String subUser;
 	
+	
+	@Id
 	@Column(name = "subed_user")
 	private String subedUser;
 	
@@ -34,7 +36,7 @@ public class MemberSub {
 	
 	@CreationTimestamp
 	@Column(name = "mem_sub_date")
-	private Timestamp memSubDate;
+	private LocalDateTime memSubDate;
 	
 	
 

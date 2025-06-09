@@ -32,6 +32,7 @@ import com.dita.domain.Member;
 import com.dita.domain.Recipe;
 import com.dita.domain.RecipeIngredient;
 import com.dita.domain.RecipeStep;
+import com.dita.domain.RecipeSub;
 import com.dita.persistence.CommentRepository;
 import com.dita.persistence.MemberRepository;
 import com.dita.persistence.MemberSubRepository;
@@ -42,12 +43,15 @@ import com.dita.persistence.RecipeSubRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,7 +59,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,7 +100,7 @@ public class RecipeController {
     
     // 레시피 상세 페이지
     @GetMapping("/recipe_detail")
-    public String showRecipeDetail(
+    public String showRecipeDetail( 
     		@RequestParam("recipe_id") Integer recipeId, Model model, 
     		@RequestParam(name = "showAll", required = false, defaultValue = "false") boolean showAll,
     		HttpSession session,
@@ -219,29 +225,25 @@ public class RecipeController {
             model.addAttribute("member", null);
         }
         
-        // ////////////////// 구독 ///////////////////
-        
-        String userId = recipe.getUserId();
-        String loginId = (String) session.getAttribute("loginId");
-        
-     // 구독 여부 확인
-        boolean isSubscribed = false;
-        if (loginId != null && !loginId.equals(userId)) {
-            isSubscribed = memsubRepo.existsBySubUserAndSubedUser(loginId, userId);
-        }
-        
-        model.addAttribute("btnLabel", isSubscribed ? "구독취소" : "구독");
-        model.addAttribute("btnClass", isSubscribed ? "unsub-btn" : "sub-btn");
-        
+        // ////////////////// 구독 버튼 클릭 처리 ///////////////////
+        String loginId = (String) session.getAttribute("idKey");
         model.addAttribute("loginId", loginId);
-        model.addAttribute("userId", userId);
+        
+        String recipeWriterId = recipe.getUserId();  // 작성자
+        model.addAttribute("userId", recipeWriterId);
+        
+        boolean isSubscribed = memsubRepo.existsBySubUserAndSubedUserAndState(loginId, recipeWriterId, 1);
+       
+
+model.addAttribute("btnLabel", isSubscribed ? "구독 중" : "구독");
+model.addAttribute("btnClass", isSubscribed ? "btn-subscribed" : "btn-unsubscribed");
 
         
 
         return "recipe_detail"; // templates/recipe_detail.html 로 이동
     }
     
-    
+   
 
     // ///////////// 조회수 증가 ////////////
     @PostMapping("/updateViews")

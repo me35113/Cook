@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body class="mypage-body">
+
+    <div th:replace="top :: topFragment"></div>
+
+    <div class="main-content">
+        <div class="left-panel"></div>
+
+        <!-- 메인 패널 -->
+        <div class="center-panel">
+            <div class="page1">
+                <div class="mypage-recipes">
+                    
+                    <!-- 상단 버튼 -->
+                    <div class="page1-1">
+                        <div class="page1-btn" onclick="location.href='/my_recipes'">레시피</div>
+                        <div class="page1-btn" style="background-color: #FFFAE9;" onclick="location.href='/my_comment'">댓글</div>
+                        <div class="page1-btn" onclick="location.href='/my_likes'">좋아요</div>
+                    </div>
+
+                    <!-- 댓글 출력 영역 -->
+                    <div class="page1-2"
+                         style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 230px); gap: 20px;">
+
+					<!-- 댓글이 없을 경우 -->
+					<div th:if="${#lists.isEmpty(comments)}"
+					     style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 500px; gap: 20px;">
+					    <img src="/images/mes.png" alt="댓글 없음" 
+					    style="max-height: 200px; object-fit: contain;" />
+					    <div style="font-size: 30px; font-weight: bold; padding-bottom: 50px;">
+					        댓글을 남겨보세요!
+					    </div>
+					</div>
+
+                        <!-- 댓글이 있을 경우 -->
+                        <div th:each="comment : ${comments}"
+                             th:if="${not #lists.isEmpty(comments)}"
+                             class="comment-panel"
+                             style="border: 1px solid #ccc; display: flex; flex-direction: column; gap: 10px;">
+                            
+                            <div style="font-weight: bold; font-size: 18px; padding-top: 15px; padding-left: 15px;">
+                                <a th:href="@{/recipe_detail(recipe_id=${comment.recipeId})}"
+                                   th:text="${comment.recipeTitle}"
+                                   style="text-decoration: none; color: black;"></a>
+                            </div>
+
+							<div th:text="${comment.recipeWriterName}" style="font-size: 14px; color: gray; padding-left: 15px;"></div>
+	
+  							<div style="border-bottom: 1px solid gray; margin: 8px 0;"></div>
+
+                            <div th:text="${comment.comment}" style="font-size: 16px; color: gray; padding-left: 15px;"></div>
+
+					<div th:text="${#dates.format(comment.commentCreate, 'yyyy-MM-dd HH:mm')}"
+   						 style="font-size: 16px; color: gray; margin-top: 4px; padding-left: 15px;"></div>
+                        </div>
+                    </div>
+
+<div class="page1-3" style="margin-top: 20px;">
+  <div th:if="${commentPage.totalPages > 0}">
+    <nav aria-label="Page navigation">
+      <div style="display: flex; justify-content: space-between; align-items: center; height: 40px;">
+      
+        <!-- 이전 -->
+        <div style="width: 10%; text-align: center;">
+          <span th:if="${!commentPage.hasPrevious()}">이전</span>
+          <a th:if="${commentPage.hasPrevious()}"
+             th:href="@{/my_comment(page=${commentPage.number}, size=${commentPage.size})}" 
+             style="text-decoration: none; color: black;">이전</a>
+        </div>
+        
+        <!-- 페이지 번호 -->
+        <div style="width: 80%; display: flex; justify-content: center; align-items: center; height: 100%;">
+          <ul style="list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; height: 100%; align-items: center;">
+            <li th:each="i : ${#numbers.sequence(1, commentPage.totalPages)}">
+              <a th:href="@{/my_comment(page=${i}, size=${commentPage.size})}"
+                 th:text="${i}"
+                 th:style="${i == commentPage.number + 1} ? 'font-weight: bold; text-decoration: none; color: black;' : 'text-decoration: none; color: black;'"
+                 style="padding: 5px 10px; border: 1px solid #ccc;"></a>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- 다음 -->
+        <div style="width: 10%; text-align: center;">
+          <span th:if="${!commentPage.hasNext()}" style="color: #ccc;"></span>
+          <a th:if="${commentPage.hasNext()}"
+             th:href="@{/my_comment(page=${commentPage.number + 2}, size=${commentPage.size})}"
+             style="text-decoration: none; color: black;">다음</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+
+
+
+                </div>
+            </div>
+
+            <!-- 마이페이지 오른쪽 패널 -->
+<div class="page2">
+    <div class="myprofile">
+        <!-- 프로필 이미지 -->
+        <div class="myprofile-item item1">
+            <img th:src="@{'/images/' + ${member.profile}}" alt="프로필 이미지" class="profile-image" />
+        </div>
+
+        <!-- 닉네임 + 아이디 -->
+        <div class="myprofile-item item2" th:if="${member != null}">
+            <p><span th:text="${member.name} + '(' + ${currentUserId} + ')'"></span></p>
+        </div>
+        <div class="myprofile-item item2" th:if="${member == null}">
+            <p>회원 정보를 불러올 수 없습니다.</p>
+        </div>
+
+        <!-- 한줄 소개 -->
+        <div class="myprofile-item item3" th:if="${member != null}">
+            <p><span th:text="${member.intro}"></span></p>
+        </div>
+
+        <!-- 구독/구독자 패널 -->
+        <div class="myprofile-item item4">
+           <div class="sub-panel">구독 <span th:text="${subscribeCount}" style="margin-left: 15px;">0</span></div>
+<div class="sub-panel">구독자 <span th:text="${subscribedCount}" style="margin-left: 15px;">0</span></div>
+        </div>
+
+        <!-- 프로필 편집 -->
+        <div class="myprofile-item item5">
+            <div class="edit-button" onclick="editProfile()">프로필 편집</div>
+        </div>
+    </div>
+</div>
+        </div>
+
+        <div class="right-panel"></div>
+    </div>
+
+    <div th:replace="bottom :: bottomFragment"></div>
+
+</body>
+</html>

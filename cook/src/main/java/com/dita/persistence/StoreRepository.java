@@ -1,4 +1,4 @@
-package com.dita.repository;
+package com.dita.persistence;
 
 import com.dita.domain.Store;
 
@@ -19,4 +19,7 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
 
     // 필요하면 전체 조회도 유지 가능
     List<Store> findByUserId(String userId);
+    
+    @Query("SELECT s.ingredientName FROM Store s WHERE s.userId = :userId")
+    List<String> findIngredientNamesByUserId(@Param("userId") String userId);
 }

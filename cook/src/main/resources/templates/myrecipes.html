@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>내 레시피 목록</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+	<h1>내 레시피 목록 (User ID: [[${currentUserId}]])</h1>
+	
+	<div th:if="${member != null}" style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; background: #f9f9f9;">
+	    <p><strong>회원 이름:</strong> <span th:text="${member.name}">이름</span></p>
+	    <p><strong>이메일:</strong> <span th:text="${member.email}">email@example.com</span></p>
+	    <p><strong>주소:</strong> <span th:text="${member.address}">주소</span></p>
+	    <!-- 필요하면 다른 필드도 추가 -->
+	</div>
+	<div th:if="${member == null}" style="margin-bottom: 20px;">
+	    <p>회원 정보를 불러올 수 없습니다.</p>
+	</div>
+	
+	<table>
+	    <thead>
+	        <tr>
+	            <th>레시피 ID</th>
+	            <th>제목</th>
+	            <th>설명</th>
+	            <th>조리시간</th>
+	            <th>난이도</th>
+	            <th>조회수</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	        <tr th:each="recipe : ${recipes}">
+	            <td th:text="${recipe.recipeId}"></td>
+	            <td th:text="${recipe.title}"></td>
+	            <td th:text="${recipe.description}"></td>
+	            <td th:text="${recipe.cookingTime}"></td>
+	            <td th:text="${recipe.level}"></td>
+	            <td th:text="${recipe.views}"></td>
+	        </tr>
+	        <tr th:if="${#lists.isEmpty(recipes)}">
+	            <td colspan="6">작성된 레시피가 없습니다.</td>
+	        </tr>
+	    </tbody>
+	</table>
+
+</body>
+</html>

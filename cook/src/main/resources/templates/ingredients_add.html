@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이냉장고</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body class="mypage-body">
+
+    <div th:replace="top :: topFragment"></div>
+
+    <div class="main-content">
+        <div class="left-panel"></div>
+        <!-- 메인 패널 시작 -->
+        <div class="center-panel">
+        	<div class="page1">
+        		<div class="mypage-recipes">
+        			<div class="page1-1">
+						<div class="page1-btn" onclick="location.href='/ingredients'">나의 재료</div>
+						<div class="page1-btn" onclick="location.href='/manage_ingredients'">재료 관리법</div>
+						<div class="page1-btn" onclick="location.href='/personalized_recipes'">맞춤 레시피</div>
+        			</div>
+<div class="page0">
+  <div style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 90%; gap: 40px; border: 2px solid #A49177; padding: 20px;">
+
+    <!-- 하나의 재료 패널 (기존 + 추가 포함, 스크롤 가능) -->
+    <div id="ingredient-list" style="max-height: 400px; overflow-y: auto; width: 100%;">
+      <!-- 기존 재료들 -->
+      <div th:each="ingredient : ${ingredientInfos}" class="ingredient-panel" style="display: flex; gap: 25px; align-items: center; margin-bottom: 10px; margin-left: 10px;">
+        <input type="text" name="ingredientName" th:value="${ingredient.ingredientName}" />
+        <input type="text" name="quantity" th:value="${ingredient.quantity}" />
+        <input type="date" name="storeCreate" th:value="${ingredient.storeCreate}" />
+        <input type="date" name="expirationDate" th:value="${ingredient.expirationDate}" />
+        <button type="button" onclick="this.parentElement.remove()">삭제</button>
+      </div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div style="display: flex; justify-content: center; gap: 20px;">
+      <div class="add-button" onclick="addIngredientPanel()" style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+        <img src="/images/plus.png" alt="추가 아이콘" />
+        재료추가
+      </div>
+      <div class="save-button" onclick="saveIngredients()" style="cursor: pointer; border: 1px solid #ccc; padding: 8px 12px; border-radius: 5px;">
+        저장하기
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // 재료 추가 함수 (동일한 패널에 추가)
+  function addIngredientPanel() {
+    const container = document.getElementById('ingredient-list');
+    const panel = document.createElement('div');
+    panel.className = 'ingredient-panel';
+    panel.style = "display: flex; gap: 10px; align-items: center; margin-bottom: 10px;";
+    panel.innerHTML = `
+      <input type="text" placeholder="재료명" name="ingredientName" />
+      <input type="text" placeholder="수량" name="quantity" />
+      <input type="date" name="storeCreate" />
+      <input type="date" name="expirationDate" />
+      <button type="button" onclick="this.parentElement.remove()">삭제</button>
+    `;
+    container.appendChild(panel);
+  }
+
+  // 저장 함수 (서버에 Store 엔티티 맞게 JSON 전송)
+  function saveIngredients() {
+    const allPanels = document.querySelectorAll('#ingredient-list .ingredient-panel');
+    const data = [];
+    let isValid = true;
+
+    allPanels.forEach(panel => {
+      const name = panel.querySelector('[name="ingredientName"]').value.trim();
+      const quantity = panel.querySelector('[name="quantity"]').value.trim();
+      const storeCreate = panel.querySelector('[name="storeCreate"]').value.trim();
+      const expirationDate = panel.querySelector('[name="expirationDate"]').value.trim();
+
+      if (!name || !quantity || !storeCreate || !expirationDate) {
+        isValid = false;
+        panel.style.border = '1px solid red';
+      } else {
+        panel.style.border = '';
+      }
+
+      // Store 엔티티 필드명에 맞춰 JSON 객체 생성
+      data.push({ 
+        ingredientName: name, 
+        quantity: quantity, 
+        storeCreate: storeCreate, 
+        expirationDate: expirationDate 
+      });
+    });
+
+    if (!isValid) {
+      alert("빈 항목이 있습니다. 모든 입력값을 확인하세요.");
+      return;
+    }
+
+// 수정
+fetch('/save_ingredients', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(data)
+})
+.then(response => {
+  if (response.ok) {
+    alert("저장 완료");
+    window.location.href = '/ingredients';
+  } else {
+    alert("저장 실패");
+  }
+})
+.catch(error => {
+  console.error("Fetch 에러:", error);
+  alert("네트워크 에러가 발생했습니다.");
+});
+
+  }
+</script>
+
+
+        			<div class="page1-3" style="margin-top: 20px;"></div>
+        		</div>
+        	</div>
+        	<div class="page2">
+        		<div class="myprofile">
+				    <div class="myprofile-item item1">패널 1</div>
+				    <div class="myprofile-item item2">닉네임</div>
+				    <div class="myprofile-item item3">설명</div>
+				    <div class="myprofile-item item4">
+				        <div class="sub-panel">1</div>
+   						<div class="sub-panel">2</div>
+				    </div>
+				    <div class="myprofile-item item5">
+				    	<div class="edit-button" onclick="/* 프로필 편집 액션 함수 호출 */">프로필 편집</div>
+				    </div>
+        		</div>
+        	</div>
+        </div>
+        <!-- 메인 패널 끝 -->
+        <div class="right-panel"></div>
+    </div>
+
+    <div th:replace="bottom :: bottomFragment"></div>
+
+</body>
+</html>

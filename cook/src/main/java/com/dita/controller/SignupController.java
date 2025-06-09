@@ -1,16 +1,17 @@
 package com.dita.controller;
 
-import com.dita.domain.Member;
 import com.dita.domain.SignupRequestDto;
 import com.dita.domain.Zipcode;
 import com.dita.persistence.ZipcodeRepository;
 import com.dita.service.KakaoLogoutService;
 import com.dita.service.MemberService;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,10 +22,17 @@ public class SignupController {
 
     private final MemberService memberService;
     private final KakaoLogoutService kakaoLogoutService;
+    private final PasswordEncoder passwordEncoder;
+    private final ZipcodeRepository zipcodeRepository;
 
-    public SignupController(MemberService memberService, KakaoLogoutService kakaoLogoutService) {
+    public SignupController(MemberService memberService,
+                            KakaoLogoutService kakaoLogoutService,
+                            PasswordEncoder passwordEncoder,
+                            ZipcodeRepository zipcodeRepository) {
         this.memberService = memberService;
         this.kakaoLogoutService = kakaoLogoutService;
+        this.passwordEncoder = passwordEncoder;
+        this.zipcodeRepository = zipcodeRepository;
     }
 
     @GetMapping("/signup")
@@ -52,31 +60,25 @@ public class SignupController {
 
     @GetMapping("/login")
     public String showLoginForm() {
+        // 로그인 처리 및 실패는 Spring Security가 담당하므로 단순히 뷰 리턴만
         return "login";
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam String userId,
-                        @RequestParam String pwd,
-                        Model model) {
+    // 직접 로그인 처리 메서드는 삭제 (Spring Security가 처리)
 
-        if (!memberService.existsByUserId(userId)) {
-            model.addAttribute("loginError", "존재하지 않는 아이디입니다.");
-            return "login";
+    @GetMapping("/main")
+    public String main(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // 익명 사용자 또는 인증 안 된 경우 로그인 페이지로 리다이렉트
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/login";
         }
 
-        Member member = memberService.findByUserId(userId);
-        if (!member.getPwd().equals(pwd)) {
-            model.addAttribute("loginError", "비밀번호가 일치하지 않습니다.");
-            return "login";
-        }
+        String userId = auth.getName();  // 로그인한 사용자 ID 가져오기
+        model.addAttribute("userId", userId);
 
-        return "redirect:/home";
-    }
-
-    @GetMapping("/home")
-    public String home() {
-        return "home";
+        return "main";
     }
 
     @GetMapping("/checkUserId")
@@ -95,33 +97,26 @@ public class SignupController {
             kakaoLogoutService.logoutKakao(accessToken);
             session.invalidate();
 
-            // 카카오 로그아웃 URL로 리디렉션 (브라우저 쿠키 제거 포함)
             String clientId = "f5a16163d9b52396f24b47c14f208fd9";
-            String redirectUri = "http://113.198.238.96/login/oauth2/code/naver"; // 로그아웃 후 돌아올 페이지
+            String redirectUri = "http://113.198.238.96/login/oauth2/code/naver";
             return "redirect:https://kauth.kakao.com/oauth/logout?client_id=" + clientId + "&logout_redirect_uri=" + redirectUri;
         }
-       
 
         session.invalidate();
         return "redirect:/login";
     }
-    
-    @Autowired
-    private ZipcodeRepository zipcodeRepository;
-    
+
     @GetMapping("/searchAddress")
     @ResponseBody
     public String searchAddress(@RequestParam String zipcode) {
+        System.out.println("조회 요청된 zipcode: [" + zipcode + "]");
         return zipcodeRepository.findByZipcode(zipcode.trim())
                 .map(Zipcode::getAddress)
                 .orElse("주소 없음");
     }
-    
+
     @GetMapping("/addressSearchPopup")
     public String addressSearchPopup() {
-        return "addressSearchPopup";  // src/main/resources/templates/addressSearchPopup.html 뷰 파일명
+        return "addressSearchPopup";
     }
-
-    
-
 }

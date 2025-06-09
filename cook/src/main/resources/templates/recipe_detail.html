@@ -44,26 +44,28 @@ th:src="${member != null and member.profile != null}
 
 
 <!-- 구독 버튼 -->
-<form th:action="@{/subscribe}" method="post">
-    <input type="hidden" name="sub_user" th:value="${loginId}" />
+<th:block th:if="${loginId != userId}">
+<!-- 
+<form th:action="@{/subscribe-toggle}" method="post">
+
     <input type="hidden" name="subed_user" th:value="${userId}" />
     <input type="hidden" name="recipe_id" th:value="${recipeId}" />
-    <button type="submit" name="action" class="subscribe-btn"
+    <button type="submit" class="subscribe-btn"
     th:text="${btnLabel}" th:class="${btnClass}"></button>
 </form>
+-->
+    <button type="button"
+        class="subscribe-btn"
+        th:class="${btnClass}"
+        th:text="${btnLabel}"
+        th:data-subed-user="${userId}"
+        th:data-recipe-id="${recipeId}"
+        onclick="handleSubscribe(this)">
+    </button>
+</th:block>
 
-<script th:if="${param.msg}">
-    const msg = /*[[${param.msg}]]*/ '';
-    if (msg === 'subscribed') {
-        alert('구독되었습니다.');
-    } else if (msg === 'unsubscribed') {
-        alert('구독이 해제되었습니다.');
-    }
 
-    const url = new URL(window.location.href);
-    url.searchParams.delete('msg');
-    window.history.replaceState({}, document.title, url.toString());
-</script>
+
 
             				</div><!-- --------- profile-info ---------- -->
             				
@@ -187,7 +189,7 @@ th:src="${member != null and member.profile != null}
 					
 					<!-- ------------- 태그 ----------------->
 					<div class="tag" th:if="${tagList != null}">
-					<a th:each="tag : ${tagList}" th:href="@{'/search?tag=' + ${tag}}"
+					<a th:each="tag : ${tagList}" 
 						th:text="${tag}"></a>
 				</div>
 					<!-- ------------- 태그 ----------------->
@@ -340,6 +342,34 @@ function validateCommentForm() {
     }
     return true; // 폼 전송 허용
 }
+
+// //////////////// 구독 처리 ///////////////////
+function handleSubscribe(button) {
+        const subedUser = button.getAttribute("data-subed-user");
+        const recipeId = button.getAttribute("data-recipe-id");
+
+        fetch("/subscribe-toggle", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `subed_user=${subedUser}&recipe_id=${recipeId}`
+        })
+        .then(response => {
+            if (response.redirected) {
+                // 뒤로가기를 눌러도 이전 레시피 디테일 페이지 안 남게 하려면 location.replace 사용
+                window.location.replace(response.url);
+            } else {
+                return response.text(); // 필요시 처리
+            }
+        })
+        .catch(error => {
+            alert("구독 처리 중 오류가 발생했습니다.");
+            console.error(error);
+        });
+    }
+
 </script>
+
 </body>
 </html>

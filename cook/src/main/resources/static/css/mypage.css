@@ -1,0 +1,229 @@
+/* mypage.css */
+/*  */
+.mypage-body {
+    margin: 0;
+    padding: 0;
+}
+
+.main-content{
+	height: 1000px;
+	display: flex;
+	width: 100%;
+}
+
+.left-panel {
+    width: 13%;
+    height: 100%;
+    background-color: red;
+}
+
+.center-panel {
+    width: 74%;
+    height: 100%;
+    display: flex;
+    background-color: green;
+}
+
+.right-panel {
+    width: 13%;
+    height: 100%;
+    background-color: blue;
+}
+
+.page1{
+	width: 70%;
+	background-color: gray;
+	margin-right: 40px;
+}
+
+.page2 {
+    width: 35%;
+    background-color: white;
+    display: flex;
+    flex-direction: column; /* 가로 → 세로 방향으로 정렬 변경 */
+    justify-content: flex-start; /* 세로 방향 시작부터 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+}
+
+
+.myprofile{
+	width: 390px;
+	height: 350px;
+	border: 2px solid #A49177;
+	margin-top: 80px;
+	border-radius: 5px; /* 모서리를 둥글게 */
+	
+	display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.myprofile-item {
+    width: 100%;
+    text-align: center;
+}
+/* 공통 Flexbox 정렬 적용 */
+.item1, .item2, .item3, .item4, .item5 {
+    display: flex;
+    justify-content: center; /* 가로 가운데 */
+    align-items: center;     /* 세로 가운데 */
+}
+/* 각 패널별 스타일 */
+.item1 {
+	height: 50%;
+    background-color: #f8d7da;
+    border-bottom: 2px solid #ddd;
+}
+.item2 {
+	height: 12%;
+    background-color: #d1ecf1;
+    border-bottom: 1px solid #ddd;
+    font-size: 18px;     /* 텍스트 크기 증가 */
+    font-weight: bold;   /* 텍스트 굵게 */
+}
+.item3 {
+	height: 8%;
+    background-color: #d4edda;
+    border-bottom: 1px solid #ddd;
+}
+.item4 {
+    height: 15%;
+    background-color: #fff3cd;
+    border-bottom: 1px solid #ddd;
+
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;     /* 세로 중앙 정렬 */
+}
+
+.sub-panel {
+    width: 140px;
+    height: 30px;
+    background-color: #ccc;
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;     /* 세로 중앙 정렬 */
+    text-align: center;
+    font-size: 15px;
+    line-height: 10px;
+}
+.item5 {
+    height: 15%;
+    background-color: #e2e3e5;
+    display: flex;
+    justify-content: center;  /* 가로 중앙 */
+    align-items: center;      /* 세로 중앙 */
+}
+
+.edit-button {
+    padding: 5px 20px;
+    border: 2px solid #1A15A8;
+    border-radius: 10px;      /* 둥근 모서리 */
+    cursor: pointer;          /* 클릭 가능한 커서 */
+    user-select: none;        /* 텍스트 선택 방지 */
+    font-weight: bold;
+    background-color: white;
+    color: #1A15A8;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #1A15A8;
+    color: white;
+}
+
+/* 레시피 스타일 */
+.mypage-recipes{
+	margin-top: 75px;
+	background-color: white;
+	height: 800px;
+}
+
+.page1-1{
+	background-color: white;
+	width: 100%;
+	height: 80px;
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center;     /* 세로 중앙 정렬 */
+    gap: 5px; /* 버튼 간 간격 */
+    margin-top: 20px;
+}
+
+.page1-btn {
+    width: 285px;
+    height: 40px;
+    border: 2px solid #1A15A8;
+    text-align: center;
+    line-height: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 24px;
+}
+
+.mypagebutton{
+	font-weight: bold; 
+	border: 2px solid #1A15A8;
+}
+
+.page1-2{
+	width: 877px;
+	height: 500px;
+	margin-top: 70px;
+	margin-left: 18px;
+}
+
+.page0{
+	width: 877px;
+	height: 570px;
+	margin-left: 18px;
+	
+}
+
+.page1-3{
+	width: 100%;
+	height: 50px;
+	background-color: maroon;
+}
+
+/*  */
+  .addpage {
+	width: 877px;
+	height: 700px;
+    position: relative;
+    padding: 20px; /* 요소들이 벽에 붙지 않게 여백 */
+  }
+
+  .list {
+    width: 100%;
+    height: 90%;
+    background-color: red;
+    margin-bottom: 20px; /* 버튼과 간격 */
+    border-radius: 8px;
+  }
+
+  .add-button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  .add-button a {
+    display: inline-flex;
+    align-items: center;
+    background-color: #1A15A8;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    gap: 6px;
+  }
+
+  .add-button img {
+    width: 24px;
+    height: 18px;
+  }

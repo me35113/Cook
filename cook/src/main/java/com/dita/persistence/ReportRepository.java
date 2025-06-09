@@ -1,4 +1,4 @@
-package com.dita.repository;
+package com.dita.persistence;
 
 import com.dita.domain.Report;
 import org.springframework.data.jpa.repository.JpaRepository;

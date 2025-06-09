@@ -1,6 +1,7 @@
 package com.dita.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dita.domain.Member;
@@ -11,10 +12,12 @@ import com.dita.persistence.MemberRepository;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // 아이디 중복 체크
@@ -22,12 +25,12 @@ public class MemberService {
         return memberRepository.existsByUserId(userId);
     }
 
-    // 회원 저장
+    // 회원 저장 (비밀번호 암호화 포함)
     public void save(SignupRequestDto dto) {
         Member member = new Member();
 
         member.setUserId(dto.getUserId());
-        member.setPwd(dto.getPwd()); // 암호화 없이 평문 저장 중
+        member.setPwd(passwordEncoder.encode(dto.getPwd()));  // 암호화 저장
         member.setName(dto.getName());
         member.setEmail(dto.getEmail());
         member.setProfile(dto.getProfile());

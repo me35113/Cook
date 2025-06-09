@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body class="mypage-body">
+
+    <div th:replace="top :: topFragment"></div>
+
+    <div class="main-content">
+        <div class="left-panel"></div>
+        <!-- 메인 패널 시작 -->
+        <div class="center-panel">
+        	<div class="page1">
+        		<div class="mypage-recipes">
+        			<div class="page1-1">
+						<div class="page1-btn" style="background-color: #FFFAE9;" onclick="location.href='/my_recipes'">레시피</div>
+						<div class="page1-btn" onclick="location.href='/my_comment'">댓글</div>
+						<div class="page1-btn" onclick="location.href='/my_likes'">좋아요</div>
+        			</div>
+<!-- 레시피 출력 영역 -->
+<div class="page1-2"
+     style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 230px); gap: 20px;">
+
+<!-- 레시피가 없을 때 -->
+<div th:if="${#lists.isEmpty(recipes)}" 
+     style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 500px; gap: 40px;">
+
+  <!-- 이미지 -->
+  <img src="/images/book.png" alt="레시피 없음"
+       style="max-height: 300px; max-width: 100%; width: auto; height: auto; object-fit: contain;" />
+
+  <!-- 텍스트 -->
+  <div style="font-size: 25px; font-weight: bold; color: #333;">
+    레시피를 직접 올려보세요!
+  </div>
+
+<!-- 버튼 -->
+<a href="/upload_recipe" 
+   style="display: inline-block; background-color: #1A15A8; color: white; padding: 10px 40px; border-radius: 8px; font-size: 20px; font-weight: bold; text-decoration: none;">
+  레시피 등록하기
+</a>
+
+
+</div>
+
+
+
+
+  <!-- 레시피가 있을 때 -->
+  <div th:each="recipe : ${recipes}" th:unless="${#lists.isEmpty(recipes)}" class="recipe-panel"
+       style="border: 1px solid #ccc; flex-direction: column; gap: 10px;">
+
+    <!-- 이미지 -->
+    <div style="height: 150px; overflow: hidden;">
+      <img th:src="@{/images/{img}(img=${recipe.completionUrl})}" alt="레시피 이미지"
+           style="width: 100%; height: 100%; object-fit: cover;" />
+    </div>
+
+    <!-- 제목 -->
+    <h3 th:text="${recipe.title}"
+        style="margin: 0; font-weight: bold; padding-left: 15px; padding-top: 15px; padding-bottom: 10px;"></h3>
+
+    <!-- 닉네임 [아이디] -->
+    <div style="padding-left: 15px;">
+      <span th:text="${member.name}"></span><span>(</span><span th:text="${currentUserId}"></span><span>)</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- 페이지네이션 영역 -->
+<div class="page1-3" style="margin-top: 20px;">
+  <nav aria-label="Page navigation" th:if="${not #lists.isEmpty(recipes)}">
+    <div style="display: flex; justify-content: space-between; align-items: center; text-align: center; height: 40px;">
+      
+      <!-- 이전 -->
+      <div style="width: 10%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; padding: 0; margin: 0; height: 100%; display: flex; align-items: center;">
+          <li th:classappend="${recipePage.hasPrevious()} ? '' : 'disabled'">
+            <a th:href="@{/my_recipes(page=${recipePage.number - 1}, size=${recipePage.size})}" 
+               th:if="${recipePage.hasPrevious()}" 
+               style="cursor: pointer; text-decoration: none; color: black;">이전</a>
+            <span th:if="${!recipePage.hasPrevious()}">이전</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 페이지 번호 -->
+      <div style="width: 80%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; height: 100%; align-items: center;">
+          <li th:each="i : ${#numbers.sequence(0, recipePage.totalPages - 1)}">
+            <a th:href="@{/my_recipes(page=${i}, size=${recipePage.size})}"
+               th:text="${i + 1}"
+               th:style="${i == recipePage.number} ? 'font-weight: bold; text-decoration: none; color: black;' : 'text-decoration: none; color: black;'"
+               style="padding: 5px 10px; border: 1px solid #ccc;"></a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 다음 -->
+      <div style="width: 10%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; padding: 0; margin: 0; height: 100%; display: flex; align-items: center;">
+          <li th:classappend="${recipePage.hasNext()} ? '' : 'disabled'">
+            <a th:href="@{/my_recipes(page=${recipePage.number + 1}, size=${recipePage.size})}" 
+               th:if="${recipePage.hasNext()}" 
+               style="cursor: pointer; text-decoration: none; color: black;">다음</a>
+            <span th:if="${!recipePage.hasNext()}">다음</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+</div>
+
+
+
+
+
+        		</div>
+        	</div>
+<div class="page2">
+    <div class="myprofile">
+        <!-- 프로필 이미지 -->
+        <div class="myprofile-item item1">
+            <img th:src="@{'/images/' + ${member.profile}}" alt="프로필 이미지" class="profile-image" />
+        </div>
+
+        <!-- 닉네임 + 아이디 -->
+        <div class="myprofile-item item2" th:if="${member != null}">
+            <p><span th:text="${member.name} + '(' + ${currentUserId} + ')'"></span></p>
+        </div>
+        <div class="myprofile-item item2" th:if="${member == null}">
+            <p>회원 정보를 불러올 수 없습니다.</p>
+        </div>
+
+        <!-- 한줄 소개 -->
+        <div class="myprofile-item item3" th:if="${member != null}">
+            <p><span th:text="${member.intro}"></span></p>
+        </div>
+
+        <!-- 구독/구독자 패널 -->
+        <div class="myprofile-item item4">
+           <div class="sub-panel">구독 <span th:text="${subscribeCount}" style="margin-left: 15px;">0</span></div>
+<div class="sub-panel">구독자 <span th:text="${subscribedCount}" style="margin-left: 15px;">0</span></div>
+        </div>
+
+        <!-- 프로필 편집 -->
+        <div class="myprofile-item item5">
+            <div class="edit-button" onclick="editProfile()">프로필 편집</div>
+        </div>
+    </div>
+</div>
+
+        </div>
+        <!-- 메인 패널 끝 -->
+        <div class="right-panel"></div>
+    </div>
+
+    <div th:replace="bottom :: bottomFragment"></div>
+
+</body>
+</html>

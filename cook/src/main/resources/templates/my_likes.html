@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body class="mypage-body">
+
+    <div th:replace="top :: topFragment"></div>
+
+    <div class="main-content">
+        <div class="left-panel"></div>
+        <!-- 메인 패널 시작 -->
+        <div class="center-panel">
+            <div class="page1">
+                <div class="mypage-recipes">
+                    <div class="page1-1">
+                        <div class="page1-btn" onclick="location.href='/my_recipes'">레시피</div>
+                        <div class="page1-btn" onclick="location.href='/my_comment'">댓글</div>
+                        <div class="page1-btn" style="background-color: #FFFAE9;" onclick="location.href='/my_likes'">좋아요</div>
+                    </div>
+                    <!-- 레시피 출력 영역 -->
+                    <div class="page1-2"
+                         style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 230px); gap: 20px;">
+
+                      <!-- 레시피가 없을 때 -->
+                      <div th:if="${#lists.isEmpty(likedRecipes)}" 
+                           style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 500px; gap: 20px;">
+
+                        <img src="/images/heart.png" alt="레시피 없음"
+                             style="max-height: 200px; max-width: 100%; width: auto; height: auto; object-fit: contain;" />
+
+                        <div style="font-size: 30px; font-weight: bold; padding-bottom: 50px;">
+                          좋아요를 남겨보세요!
+                        </div>
+
+                      </div>
+
+                      <!-- 레시피가 있을 때 -->
+                      <div th:each="item : ${likedRecipes}" th:unless="${#lists.isEmpty(likedRecipes)}" class="recipe-panel"
+                           style="border: 1px solid #ccc; box-shadow: 0 2px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 10px;">
+
+                        <a th:href="@{'/recipe_detail?recipe_id=' + ${item.recipe.recipeId}}" style="text-decoration: none; color: inherit;">
+                          <!-- 이미지 -->
+                          <div style="height: 150px; overflow: hidden;">
+                            <img th:src="@{/images/{img}(img=${item.recipe.completionUrl})}" alt="레시피 이미지"
+                                 style="width: 100%; height: 100%; object-fit: cover;" />
+                          </div>
+
+                          <!-- 제목 -->
+                          <h3 th:text="${item.recipe.title}"
+                              style="margin: 10px 0 0 0; font-weight: bold;"></h3>
+
+                          <!-- 작성자 이름(아이디) -->
+                          <div style="color: #555; font-size: 0.9em;">
+                            <span th:text="${item.userName}"></span><span> (</span><span th:text="${item.recipe.userId}"></span><span>)</span>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+
+<!-- 페이지네이션 영역 -->
+<div class="page1-3" style="margin-top: 20px;">
+  <nav aria-label="Page navigation" th:if="${not #lists.isEmpty(likedRecipes)}">
+    <div style="display: flex; justify-content: space-between; align-items: center; text-align: center; height: 40px;">
+
+      <!-- 이전 -->
+      <div style="width: 10%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; padding: 0; margin: 0; height: 100%; display: flex; align-items: center;">
+          <li th:classappend="${currentPage > 1} ? '' : 'disabled'">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/my_likes(page=${currentPage - 1})}"
+               style="cursor: pointer; text-decoration: none; color: black;">이전</a>
+            <span th:if="${currentPage == 1}" style="color: #aaa;">이전</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 페이지 번호 -->
+      <div style="width: 80%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; height: 100%; align-items: center;">
+          <li th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/my_likes(page=${i})}"
+               th:text="${i}"
+               th:style="${i == currentPage} ? 'font-weight: bold; text-decoration: none; color: black;' : 'text-decoration: none; color: black;'"
+               style="padding: 5px 10px; border: 1px solid #ccc;"></a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 다음 -->
+      <div style="width: 10%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; padding: 0; margin: 0; height: 100%; display: flex; align-items: center;">
+          <li th:classappend="${currentPage < totalPages} ? '' : 'disabled'">
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/my_likes(page=${currentPage + 1})}"
+               style="cursor: pointer; text-decoration: none; color: black;">다음</a>
+            <span th:if="${currentPage == totalPages}" style="color: #aaa;">다음</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+</div>
+
+
+                </div>
+            </div>
+<div class="page2">
+    <div class="myprofile">
+        <!-- 프로필 이미지 -->
+        <div class="myprofile-item item1">
+            <img th:src="@{'/images/' + ${member.profile}}" alt="프로필 이미지" class="profile-image" />
+        </div>
+
+        <!-- 닉네임 + 아이디 -->
+        <div class="myprofile-item item2" th:if="${member != null}">
+            <p><span th:text="${member.name} + '(' + ${currentUserId} + ')'"></span></p>
+        </div>
+        <div class="myprofile-item item2" th:if="${member == null}">
+            <p>회원 정보를 불러올 수 없습니다.</p>
+        </div>
+
+        <!-- 한줄 소개 -->
+        <div class="myprofile-item item3" th:if="${member != null}">
+            <p><span th:text="${member.intro}"></span></p>
+        </div>
+
+        <!-- 구독/구독자 패널 -->
+        <div class="myprofile-item item4">
+           <div class="sub-panel">구독 <span th:text="${subscribeCount}" style="margin-left: 15px;">0</span></div>
+<div class="sub-panel">구독자 <span th:text="${subscribedCount}" style="margin-left: 15px;">0</span></div>
+        </div>
+
+        <!-- 프로필 편집 -->
+        <div class="myprofile-item item5">
+            <div class="edit-button" onclick="editProfile()">프로필 편집</div>
+        </div>
+    </div>
+</div>
+        </div>
+        <!-- 메인 패널 끝 -->
+        <div class="right-panel"></div>
+    </div>
+
+    <div th:replace="bottom :: bottomFragment"></div>
+
+</body>
+</html>

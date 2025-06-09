@@ -2,8 +2,8 @@ package com.dita.persistence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.dita.domain.Recipe_ingredient;
+import com.dita.domain.RecipeIngredient;
 
-public interface Recipe_ingredientRepository extends JpaRepository<Recipe_ingredient, Integer> {
+public interface Recipe_ingredientRepository extends JpaRepository<RecipeIngredient, Integer> {
 
 }

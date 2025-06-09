@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.dita.domain.Category;
 import com.dita.domain.Member;
 import com.dita.domain.Recipe;
-import com.dita.domain.Recipe_ingredient;
+import com.dita.domain.RecipeIngredient;
 import com.dita.domain.Recipe_step;
 import com.dita.persistence.CategoryRepository;
 import com.dita.persistence.MemberRepository;
@@ -123,7 +123,7 @@ public class CookController {
                     String ingredientName = ingredientNode.get("ingredient_name").asText();
                     
                     if (ingredientName != null && !ingredientName.trim().isEmpty()) {
-                        Recipe_ingredient recipeIngredient = new Recipe_ingredient();
+                        RecipeIngredient recipeIngredient = new RecipeIngredient();
                         recipeIngredient.setRecipeId(savedRecipe.getRecipeId());
                         recipeIngredient.setGroupName(ingredientNode.get("group_name").asText());
                         recipeIngredient.setIngredientName(ingredientName);

@@ -6,51 +6,77 @@ import java.net.URL;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import com.dita.service.CustomOAuth2UserService;
+import com.dita.service.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthorizedClientService authorizedClientService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // 여기에 /addressSearchPopup 추가
-                .requestMatchers("/", "/login", "/signup", "/checkUserId","/boardlist_read", 
-                		"/searchAddress", "/addressSearchPopup","/boardlist_write","/boardlist","/registration","/category",
-                		"/css/**", "/images/**").permitAll()
+                .requestMatchers(
+                    "/", "/login", "/signup", "/checkUserId", "/boardlist_read", 
+                    "/searchAddress", "/addressSearchPopup", "/boardlist_write",
+                    "/boardlist", "/registration", "/category", "/recipe_detail","/my_recipes",
+                    "/css/**", "/images/**"
+                ).permitAll()
                 .anyRequest().authenticated()
+                
             )
+            // 일반 로그인 설정
+            .formLogin(form -> form
+                .loginPage("/login")                 // 커스텀 로그인 페이지
+                .loginProcessingUrl("/login")       // POST 요청 처리 URL
+                .defaultSuccessUrl("/home", true)   // 로그인 성공 시 이동
+                .failureUrl("/login?error")         // 로그인 실패 시 이동
+                .permitAll()
+            )
+            // OAuth2 로그인 설정
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 .defaultSuccessUrl("/home", true)
             )
+            // 로그아웃 설정
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .addLogoutHandler(customLogoutHandler())
                 .logoutSuccessUrl("/login?logout")
-                .invalidateHttpSession(true)  // 세션 무효화
-                .deleteCookies("JSESSIONID")  // 쿠키 삭제
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll()
             );
 
+        // 일반 로그인 시 사용할 UserDetailsService 등록
+        http.userDetailsService(customUserDetailsService);
+
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -105,8 +131,9 @@ public class SecurityConfig {
         String clientId = "GWT46vjYfA0zmf1THiI0";
         String clientSecret = "V9A5VDmgrj";
 
-        String urlStr = String.format("https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=%s&client_secret=%s&access_token=%s&service_provider=NAVER",
-                clientId, clientSecret, accessToken);
+        String urlStr = String.format(
+            "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=%s&client_secret=%s&access_token=%s&service_provider=NAVER",
+            clientId, clientSecret, accessToken);
 
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -120,4 +147,5 @@ public class SecurityConfig {
         }
         conn.disconnect();
     }
+
 }

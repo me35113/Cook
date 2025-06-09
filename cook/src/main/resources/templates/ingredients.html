@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이냉장고</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body class="mypage-body">
+
+    <div th:replace="top :: topFragment"></div>
+
+    <div class="main-content">
+        <div class="left-panel"></div>
+        <!-- 메인 패널 시작 -->
+        <div class="center-panel">
+        	<div class="page1">
+        		<div class="mypage-recipes">
+        			<div class="page1-1">
+						<div class="page1-btn" style="background-color: #FFFAE9;" onclick="location.href='/ingredients'">나의 재료</div>
+						<div class="page1-btn" onclick="location.href='/manage_ingredients'">재료 관리법</div>
+						<div class="page1-btn" onclick="location.href='/personalized_recipes'">맞춤 레시피</div>
+        			</div>
+<div class="page1-2">
+  <!-- 재료가 없는 경우 -->
+  <div th:if="${!hasIngredients}"
+       style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 500px; gap: 40px;">
+
+    <img src="/images/plus.png" alt="레시피 없음"
+         style="max-height: 300px; max-width: 100%; width: auto; height: auto; object-fit: contain;" />
+
+    <div style="font-size: 25px; font-weight: bold; color: #333;">
+      재료를 추가해보세요!
+    </div>
+
+    <a href="/ingredients_add"
+       style="display: inline-block; background-color: #1A15A8; color: white; padding: 10px 40px; border-radius: 8px; font-size: 20px; font-weight: bold; text-decoration: none;">
+      추가하기
+    </a>
+  </div>
+
+  <!-- 재료가 있는 경우 -->
+  <div th:if="${hasIngredients}" 
+       style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 230px); gap: 20px;">
+    <div th:each="item : ${ingredientPage.content}" style="border: 1px solid #ddd;">
+      <h3 th:text="${item.ingredientName}" style="padding: 15px;">재료명</h3>
+      <ul>
+        <li style="padding-bottom: 25px">등록일: <span th:text="${item.storeCreate}">등록일</span></li>
+        <li>유통기한: <span th:text="${item.expirationDate}">기한</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 페이지네이션 영역 -->
+<div class="page1-3" style="margin-top: 20px;" th:if="${ingredientPage.totalPages > 1}">
+  <nav aria-label="Page navigation">
+    <div style="display: flex; justify-content: space-between; align-items: center; text-align: center; height: 40px;">
+
+      <!-- 이전 -->
+      <div style="width: 10%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; padding: 0; margin: 0; height: 100%; display: flex; align-items: center;">
+          <li th:classappend="${ingredientPage.hasPrevious()} ? '' : 'disabled'">
+            <a th:href="@{/ingredients(page=${ingredientPage.number - 1})}" 
+               th:if="${ingredientPage.hasPrevious()}" 
+               style="cursor: pointer; text-decoration: none; color: black;">이전</a>
+            <span th:if="${!ingredientPage.hasPrevious()}">이전</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 페이지 번호 -->
+      <div style="width: 80%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; height: 100%; align-items: center;">
+          <li th:each="i : ${#numbers.sequence(0, ingredientPage.totalPages - 1)}">
+            <a th:href="@{/ingredients(page=${i})}"
+               th:text="${i + 1}"
+               th:style="${i == ingredientPage.number} ? 'font-weight: bold; text-decoration: none; color: black;' : 'text-decoration: none; color: black;'"
+               style="padding: 5px 10px; border: 1px solid #ccc;"></a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 다음 -->
+      <div style="width: 10%; display: flex; justify-content: center; align-items: center; height: 100%;">
+        <ul style="list-style: none; padding: 0; margin: 0; height: 100%; display: flex; align-items: center;">
+          <li th:classappend="${ingredientPage.hasNext()} ? '' : 'disabled'">
+            <a th:href="@{/ingredients(page=${ingredientPage.number + 1})}" 
+               th:if="${ingredientPage.hasNext()}" 
+               style="cursor: pointer; text-decoration: none; color: black;">다음</a>
+            <span th:if="${!ingredientPage.hasNext()}">다음</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+</div>
+        		</div>
+        	</div>
+<div class="page2">
+    <div class="myprofile">
+        <!-- 프로필 이미지 -->
+        <div class="myprofile-item item1">
+            <img th:src="@{'/images/' + ${member.profile}}" alt="프로필 이미지" class="profile-image" />
+        </div>
+
+        <!-- 닉네임 + 아이디 -->
+        <div class="myprofile-item item2" th:if="${member != null}">
+            <p><span th:text="${member.name} + '(' + ${currentUserId} + ')'"></span></p>
+        </div>
+        <div class="myprofile-item item2" th:if="${member == null}">
+            <p>회원 정보를 불러올 수 없습니다.</p>
+        </div>
+
+        <!-- 한줄 소개 -->
+        <div class="myprofile-item item3" th:if="${member != null}">
+            <p><span th:text="${member.intro}"></span></p>
+        </div>
+
+        <!-- 구독/구독자 패널 -->
+        <div class="myprofile-item item4">
+           <div class="sub-panel">구독 <span th:text="${subscribeCount}" style="margin-left: 15px;">0</span></div>
+<div class="sub-panel">구독자 <span th:text="${subscribedCount}" style="margin-left: 15px;">0</span></div>
+        </div>
+
+        <!-- 프로필 편집 -->
+        <div class="myprofile-item item5">
+            <div class="edit-button" onclick="editProfile()">프로필 편집</div>
+        </div>
+    </div>
+<button type="button" 
+        style="
+          padding: 10px 25px; 
+          font-size: 14px; 
+          cursor: pointer; 
+          align-self: flex-start; 
+          margin-left: 30px; 
+          margin-top: 10px;
+          background-color: #1A15A8; 
+          color: white;
+          border: none; 
+          border-radius: 5px;
+          transition: background-color 0.3s ease;
+        "
+        onmouseover="this.style.backgroundColor='#131174';"
+        onmouseout="this.style.backgroundColor='#1A15A8';"
+        onclick="location.href='/ingredients_add'">
+  재료 추가
+</button>
+</div>
+        </div>
+        <!-- 메인 패널 끝 -->
+        <div class="right-panel"></div>
+    </div>
+
+    <div th:replace="bottom :: bottomFragment"></div>
+
+</body>
+</html>

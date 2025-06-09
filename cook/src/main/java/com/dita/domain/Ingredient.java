@@ -1,7 +1,11 @@
 package com.dita.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "ingredient")
 public class Ingredient {
@@ -19,16 +23,5 @@ public class Ingredient {
     @Column(name = "shelf_life")
     private Integer shelfLife;
 
-    // getters/setters
-    public String getIngredientName() { return ingredientName; }
-    public void setIngredientName(String ingredientName) { this.ingredientName = ingredientName; }
-
-    public int getFoodGroupId() { return foodGroupId; }
-    public void setFoodGroupId(int foodGroupId) { this.foodGroupId = foodGroupId; }
-
-    public String getMethod() { return method; }
-    public void setMethod(String method) { this.method = method; }
-
-    public Integer getShelfLife() { return shelfLife; }
-    public void setShelfLife(Integer shelfLife) { this.shelfLife = shelfLife; }
+   
 }

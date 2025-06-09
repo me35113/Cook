@@ -31,7 +31,17 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
     // 페이징
     //Page<Recipe> findAll(Pageable pageable);
+    
+    int countByUserId(String userId);
+    Page<Recipe> findByUserId(String userId, Pageable pageable); // 페이징 추가
 	
+    @Query("SELECT r, m.name FROM Recipe r JOIN Member m ON r.userId = m.userId WHERE r.recipeId IN :recipeIds")
+    List<Object[]> findRecipesWithUserNameByIds(@Param("recipeIds") List<Integer> recipeIds);
+    
+    @Query("SELECT DISTINCT r.recipeId FROM RecipeIngredient r WHERE r.ingredientName IN :ingredients")
+    List<Integer> findDistinctRecipeIdsByIngredientNames(@Param("ingredients") List<String> ingredients);
+    Page<Recipe> findByRecipeIdIn(List<Integer> recipeIds, Pageable pageable);
+    
     @Modifying
     @Transactional
     @Query("UPDATE Recipe r SET r.views = r.views + 1 WHERE r.recipeId = :recipeId")
