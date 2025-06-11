@@ -109,6 +109,15 @@ ul, li {
 	overflow-wrap: break-word;
 }
 
+button.img-button {
+  all: unset;               /* 대부분의 기본 스타일 제거 */
+  cursor: pointer;          /* 클릭 가능한 커서 모양 */
+  display: inline-block;    /* 이미지만큼만 크기 */
+  padding: 0;               /* 여백 제거 */
+  border: none;             /* 테두리 제거 */
+  background: none;         /* 배경 제거 */
+}
+
 .user-info {
 	display: flex;
 	position: relative;
@@ -329,6 +338,31 @@ ul, li {
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 	width: 400px;
 	max-width: 90%;
+}
+
+.modal-content button {
+	width: 100px;
+height: 30px;
+	border: 1px solid #1A15A8;
+border-radius: 5px;
+}
+
+.modal-content .okbutton {
+background: #1A15A8;
+color: #FFFFFF;
+}
+
+.modal-content .cancelbutton {
+color: #1A15A8;
+background: #FFFFFF;
+}
+
+.modal-content .reportreason {
+	margin-bottom: 10px;
+}
+.modal-content .reasoncheck {
+	margin-bottom: 10px;
+	
 }
 
 .ingredient-list a {
@@ -610,6 +644,12 @@ ul, li {
 	border-top: 1px solid #C3B198;
 }
 
+.rereply-item {
+	padding: 10px 0;
+	padding-right: 40px;
+	border-top: 1px solid #C3B198;
+}
+
 .img-modal {
 	display: none;
 	position: fixed;
@@ -630,4 +670,16 @@ ul, li {
 	max-width: 60%;
 	max-height: 60%;
 	image-rendering: auto;
+}
+
+.reply-box {
+	display: flex;
+}
+
+.rereply-text {
+	justify-content: space-between;
+	display: flex;
+	width: 930px;
+	gap: 120px;
+
 }

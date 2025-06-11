@@ -7,9 +7,12 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
+
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
+@DynamicUpdate
 @Getter
 @Setter
 @Table(name = "member")
@@ -64,4 +67,11 @@ public class Member {
 
     @Column(name = "`rank`", length = 255)
     private String rank;
+
+    // 새로 추가하는 필드 - 구독 여부
+    @Transient  // DB 컬럼이 없고, 임시 데이터로 쓰고 싶으면 @Transient 붙임
+    private Boolean subscribed;
+
+    // 만약 DB에 컬럼이 존재한다면 @Column으로 매핑하면 됩니다.
+    // 예: @Column(name = "subscribed") private Boolean subscribed;
 }

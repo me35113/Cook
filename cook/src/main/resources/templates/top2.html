@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="top2Fragment">
+<head>
+    <link rel="stylesheet" th:href="@{/css/top.css}">
+    <style>
+        .top-bar {
+            background-color: #fff;
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .top-bar .logo img {
+            height: 50px;
+        }
+
+        .search input[type="text"] {
+            width: 450px;
+            padding: 8px 12px;
+            border-radius: 5px 0 0 5px;
+            border: 1px solid navy;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .search input[type="text"]::placeholder {
+            color: #999;
+        }
+
+        .search div {
+            background-color: navy;
+            padding: 4px 8px;
+            border-radius: 0 5px 5px 0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search div:hover {
+            background-color: #001f5c;
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: navy;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .nav-bar {
+            background-color: navy;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-bar ul {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            padding: 12px 0;
+            margin: 0 auto;
+            max-width: 1000px;
+        }
+
+        .nav-bar li {
+            margin: 0 60px;
+        }
+
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .nav-bar a:hover {
+            text-decoration: underline;
+            color: #ffcc00;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <div class="top-bar-container">
+        <!-- 로고 -->
+        <div class="logo" style="margin-left: auto;">
+            <a th:href="@{/main}">
+                <img src="/images/logo.jpg" alt="사이트 로고">
+            </a>
+        </div>
+
+        <!-- 검색 -->
+        <div class="search" style="display: flex;">
+            <input type="text" id="searchInput" placeholder="레시피나 재료를 검색하세요"
+                   onkeypress="if(event.keyCode==13) search();">
+            <div onclick="search()">
+                <img src="/images/Search.png" alt="검색" style="width: 30px;">
+            </div>
+        </div>
+
+        <!-- 마이페이지 (로그인 시에만 보이기) -->
+        <div class="my" style="margin-left: 40px; position: relative;" th:if="${session.loginId != null}">
+            <a th:href="@{/my_recipes}">
+            </a>
+        </div>
+
+        <div style="width: 20px;"></div>
+
+        <!-- 글작성 (로그인 시에만 보이기) -->
+        <div class="create" style="position: relative;" th:if="${session.loginId != null}">
+            <a th:href="@{/registration}">
+            </a>
+        </div>
+
+        <div style="width: 20px;"></div>
+
+        <!-- 로그인 / 로그아웃 -->
+        <div class="login-link" style="margin-right: auto; font-size: 16px;">
+            <a th:href="${session.loginId == null} ? @{/login} : @{/logout}">
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 네비게이션 -->
+<div class="nav-bar">
+    <ul>
+        <li><a th:href="@{/admincategory}" >레시피 관리</a></li>
+        <li><a th:href="@{/admincomment2}">댓글 관리</a></li>
+        <li><a th:href="@{/adminboard2}">게시판 관리</a></li>
+   
+    </ul>
+</div>
+
+<!-- 검색 스크립트 및 툴팁 -->
+<script th:inline="javascript">
+    function search() {
+        var searchText = document.getElementById('searchInput').value;
+        if (searchText.trim() !== '') {
+            window.location.href = '/category?search=' + encodeURIComponent(searchText);
+        }
+    }
+
+    document.querySelectorAll('.create, .my').forEach(function (element) {
+        element.addEventListener('mouseover', function () {
+            this.querySelector('.tooltip').style.display = 'block';
+        });
+        element.addEventListener('mouseout', function () {
+            this.querySelector('.tooltip').style.display = 'none';
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,8 +1,10 @@
 package com.dita.controller;
 
+import com.dita.CookApplication;
 import com.dita.domain.Comment;
 import com.dita.domain.Ingredient;
 import com.dita.domain.Member;
+import com.dita.domain.MemberSub;
 import com.dita.domain.Recipe;
 import com.dita.domain.RecipeSub;
 import com.dita.domain.Store;
@@ -26,22 +28,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
+import java.security.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
 public class MyRecipeController {
+
+    private final CookApplication cookApplication;
 
     @Autowired
     private RecipeRepository recipeRepository;
@@ -61,29 +73,6 @@ public class MyRecipeController {
     
     private final StoreRepository storeRepository;
     private final IngredientRepository ingredientRepository;
-    
-    
-    @GetMapping("/myrecipes")
-    public String getMyRecipes(Model model) {
-        // 레시피 리스트
-    	
-        List<Recipe> recipes = recipeRepository.findByUserId(CURRENT_USER_ID);
-        model.addAttribute("recipes", recipes);
-
-        // 현재 유저 아이디
-        model.addAttribute("currentUserId", CURRENT_USER_ID);
-
-        // 회원 정보 조회
-        Optional<Member> memberOpt = memberRepository.findById(CURRENT_USER_ID);
-        if (memberOpt.isPresent()) {
-            model.addAttribute("member", memberOpt.get());
-        } else {
-            // 회원 정보 없을 때 예외 처리 혹은 기본값 설정 가능
-            model.addAttribute("member", null);
-        }
-
-        return "myrecipes";  // templates/myrecipes.html
-    }
     
     @GetMapping("/my_recipes")
     public String getMyRecipesAlias(
@@ -202,6 +191,13 @@ public class MyRecipeController {
             }
         });
 
+        // 구독 수 (내가 구독한 사람 수)
+        int subscribeCount = memberSubRepository.countBySubUserAndState(CURRENT_USER_ID, 1);
+        // 구독자 수 (나를 구독한 사람 수)
+        int subscribedCount = memberSubRepository.countBySubedUserAndState(CURRENT_USER_ID, 1);
+
+        model.addAttribute("subscribeCount", subscribeCount);
+        model.addAttribute("subscribedCount", subscribedCount);
         model.addAttribute("comments", commentPage.getContent());
         model.addAttribute("commentCount", commentPage.getTotalElements());
         model.addAttribute("currentPage", page);
@@ -245,6 +241,13 @@ public class MyRecipeController {
             likedRecipes.add(map);
         }
 
+        // 구독 수 (내가 구독한 사람 수)
+        int subscribeCount = memberSubRepository.countBySubUserAndState(CURRENT_USER_ID, 1);
+        // 구독자 수 (나를 구독한 사람 수)
+        int subscribedCount = memberSubRepository.countBySubedUserAndState(CURRENT_USER_ID, 1);
+
+        model.addAttribute("subscribeCount", subscribeCount);
+        model.addAttribute("subscribedCount", subscribedCount);
         model.addAttribute("likedRecipes", likedRecipes);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", subscriptions.getTotalPages());
@@ -252,9 +255,10 @@ public class MyRecipeController {
         return "my_likes";
     }
 
-    public MyRecipeController(StoreRepository storeRepository, IngredientRepository ingredientRepository) {
+    public MyRecipeController(StoreRepository storeRepository, IngredientRepository ingredientRepository, CookApplication cookApplication) {
         this.storeRepository = storeRepository;
         this.ingredientRepository = ingredientRepository;
+        this.cookApplication = cookApplication;
     }
 
     @GetMapping("/manage_ingredients")
@@ -288,6 +292,13 @@ public class MyRecipeController {
             })
             .collect(Collectors.toList());
 
+        // 구독 수 (내가 구독한 사람 수)
+        int subscribeCount = memberSubRepository.countBySubUserAndState(CURRENT_USER_ID, 1);
+        // 구독자 수 (나를 구독한 사람 수)
+        int subscribedCount = memberSubRepository.countBySubedUserAndState(CURRENT_USER_ID, 1);
+
+        model.addAttribute("subscribeCount", subscribeCount);
+        model.addAttribute("subscribedCount", subscribedCount);
         model.addAttribute("hasIngredients", true);
         model.addAttribute("ingredientInfos", ingredientInfos);
         model.addAttribute("ingredientPage", storePage);
@@ -331,12 +342,23 @@ public class MyRecipeController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Store> storePage = storeRepository.findByUserIdWithIngredient2(currentUserId, pageable);
 
+        // 구독 수 (내가 구독한 사람 수)
+
+        // 구독자 수 (나를 구독한 사람 수)
+        int subscribedCount = memberSubRepository.countBySubedUserAndState(CURRENT_USER_ID, 1);
+        int subscribeCount = memberSubRepository.countBySubUserAndState(CURRENT_USER_ID, 1);
+        System.out.println("subscribeCount = " + subscribeCount);
+        model.addAttribute("subscribeCount", subscribeCount);
+
+        model.addAttribute("subscribedCount", subscribedCount);
+
         boolean hasIngredients = !storePage.isEmpty();
         model.addAttribute("ingredientPage", storePage);
         model.addAttribute("hasIngredients", hasIngredients);
 
         return "ingredients";
     }
+
 
     @PostMapping("/save_ingredients")
     @ResponseBody
@@ -346,24 +368,77 @@ public class MyRecipeController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
-        // 1) 기존 userId에 해당하는 store 데이터 모두 삭제
+        // 기존 데이터 삭제
         List<Store> existingStores = storeRepository.findByUserId(userId);
         storeRepository.deleteAll(existingStores);
 
-        // 2) 넘어온 리스트에 userId 세팅 후 저장
+        // 등록 처리
         for (Store store : ingredients) {
             store.setUserId(userId);
             store.setStoreId(0); // 새로 저장할 때 ID 초기화
+
+            // 유통기한 자동 계산
+            if ((store.getExpirationDate() == null || store.getExpirationDate().toString().isEmpty())
+                && store.getIngredientName() != null && store.getStoreCreate() != null) {
+
+                Ingredient ingredient = ingredientRepository.findByIngredientName(store.getIngredientName());
+                if (ingredient != null) {
+                    try {
+                        int shelfLife = ingredient.getShelfLife(); // 예: 10일
+
+                        // storeCreate (String) → LocalDate
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate storeCreateDate = LocalDate.parse(store.getStoreCreate(), formatter);
+
+                        // 계산된 유통기한
+                        LocalDate expirationDate = storeCreateDate.plusDays(shelfLife);
+
+                        // LocalDate → java.sql.Date로 변환하여 저장
+                        store.setExpirationDate(java.sql.Date.valueOf(expirationDate));
+                    } catch (Exception e) {
+                        System.err.println("날짜 변환 또는 계산 실패: " + store.getStoreCreate());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
             storeRepository.save(store);
         }
 
         return ResponseEntity.ok("저장 완료");
     }
 
+
+    @PostMapping("/calculate_expiration")
+    @ResponseBody
+    public String calculateExpiration(@RequestBody Map<String, String> payload) {
+        String ingredientName = payload.get("ingredientName");
+        String storeCreate = payload.get("storeCreate");
+
+        Ingredient ingredient = ingredientRepository.findByIngredientName(ingredientName);
+        if (ingredient == null) return "";
+
+        int shelfLife = ingredient.getShelfLife();
+        LocalDate createDate = LocalDate.parse(storeCreate);
+        LocalDate expirationDate = createDate.plusDays(shelfLife);
+        return expirationDate.toString();
+    }
+
     
     @GetMapping("/ingredients_add")
     public String showIngredients(Model model) {
         List<Store> ingredientInfos = storeRepository.findByUserId(CURRENT_USER_ID); // store 테이블 조회
+        String currentUserId = CURRENT_USER_ID;
+        model.addAttribute("currentUserId", currentUserId);
+        Optional<Member> memberOpt = memberRepository.findById(currentUserId);
+        model.addAttribute("member", memberOpt.orElse(null));
+        // 구독 수 (내가 구독한 사람 수)
+        int subscribeCount = memberSubRepository.countBySubUserAndState(CURRENT_USER_ID, 1);
+        // 구독자 수 (나를 구독한 사람 수)
+        int subscribedCount = memberSubRepository.countBySubedUserAndState(CURRENT_USER_ID, 1);
+
+        model.addAttribute("subscribeCount", subscribeCount);
+        model.addAttribute("subscribedCount", subscribedCount);
         model.addAttribute("ingredientInfos", ingredientInfos);
         return "ingredients_add";
     }
@@ -386,12 +461,119 @@ public class MyRecipeController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Recipe> recipePage = recipeRepository.findByRecipeIdIn(recipeIds, pageable);
 
+        model.addAttribute("currentUserId", currentUserId);
+        Optional<Member> memberOpt = memberRepository.findById(currentUserId);
+        model.addAttribute("member", memberOpt.orElse(null));
+        // 구독 수 (내가 구독한 사람 수)
+        int subscribeCount = memberSubRepository.countBySubUserAndState(CURRENT_USER_ID, 1);
+        // 구독자 수 (나를 구독한 사람 수)
+        int subscribedCount = memberSubRepository.countBySubedUserAndState(CURRENT_USER_ID, 1);
+
+        model.addAttribute("subscribeCount", subscribeCount);
+        model.addAttribute("subscribedCount", subscribedCount);
         model.addAttribute("recipes", recipePage.getContent());
         model.addAttribute("recipePage", recipePage);
         model.addAttribute("currentUserId", currentUserId);
 
         return "personalized_recipes";
     }
+
+    @GetMapping("/subscribed-users")
+    @ResponseBody
+    public List<Map<String, String>> getSubscribedUsers(HttpSession session) {
+        String userId = (String) session.getAttribute("CURRENT_USER_ID");
+        List<MemberSub> subs = memberSubRepository.findBySubUserAndState(userId, 1);
+
+        List<Map<String, String>> result = new ArrayList<>();
+        for (MemberSub sub : subs) {
+            Member m = memberRepository.findById(sub.getSubedUser()).orElse(null);
+            if (m != null) {
+                Map<String, String> map = new HashMap<>();
+                map.put("userId", m.getUserId());
+                map.put("name", m.getName());
+                map.put("profile", m.getProfile());
+                result.add(map);
+            }
+        }
+
+        return result;
+    }
+    
+    @GetMapping("/toggle-subscribe")
+    @ResponseBody
+    public String toggleSubscribe(@RequestParam String subUser, @RequestParam String subedUser) {
+        MemberSub sub = memberSubRepository.findBySubUserAndSubedUser(subUser, subedUser);
+
+        if (sub != null) {
+            int newState = (sub.getState() == 1) ? 0 : 1;
+            sub.setState(newState);
+            memberSubRepository.save(sub);
+            return (newState == 1) ? "구독취소" : "구독";
+        } else {
+            // 처음 구독하는 경우: 새로운 구독 생성
+            MemberSub newSub = new MemberSub();
+            newSub.setSubUser(subUser);
+            newSub.setSubedUser(subedUser);
+            newSub.setState(1); // 구독 상태로 생성
+            memberSubRepository.save(newSub);
+            return "구독취소"; // 방금 구독했으므로 다음 누름은 '취소'
+        }
+    }
+
+    @GetMapping("/edit_profile")
+    public String showEditProfileForm(Model model) {
+        // 현재 로그인된 사용자 ID는 상수 또는 세션에서 얻는다고 가정
+        String userId = CURRENT_USER_ID;  // 혹은 session.getAttribute("userId")
+
+        Member member = memberRepository.findById(userId).orElse(null);
+
+        if (member == null) {
+            // 회원 정보 없으면 빈 객체라도 넘기거나 에러 처리
+            member = new Member();
+        }
+
+        model.addAttribute("member", member);
+        return "edit_profile";
+    }
+
+
+
+    @PostMapping("/editProfileSubmit")
+    public String updateProfile(@ModelAttribute Member member,
+                                @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
+        String userId = CURRENT_USER_ID;
+
+        Member existingMember = memberRepository.findById(userId).orElse(null);
+        if (existingMember == null) {
+            return "redirect:/edit_profile";
+        }
+
+        if (profileImage != null && !profileImage.isEmpty()) {
+            String originalFilename = profileImage.getOriginalFilename();
+
+            // 저장 폴더 절대 경로 (환경에 맞게 변경 가능)
+            String uploadDir = new File("src/main/resources/static/images").getAbsolutePath() + File.separator;
+            File uploadPath = new File(uploadDir);
+            if (!uploadPath.exists()) uploadPath.mkdirs();
+
+            // 원본 파일명 그대로 저장 (덮어쓰기 주의)
+            profileImage.transferTo(new File(uploadDir + originalFilename));
+
+            // DB에는 파일명만 저장
+            existingMember.setProfile(originalFilename);
+        }
+
+        // 나머지 필드 업데이트
+        existingMember.setName(member.getName());
+        existingMember.setEmail(member.getEmail());
+        existingMember.setIntro(member.getIntro());
+        existingMember.setAllergy(member.getAllergy());
+
+        memberRepository.save(existingMember);
+
+        return "redirect:/my_recipes";
+    }
+
 
 
 }

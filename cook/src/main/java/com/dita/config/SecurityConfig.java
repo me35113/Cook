@@ -33,22 +33,32 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+
             .csrf(csrf -> csrf.disable())
+            // 권한 설정
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/", "/login", "/signup", "/checkUserId", "/boardlist_read", 
-                    "/searchAddress", "/addressSearchPopup", "/boardlist_write",
-                    "/boardlist", "/registration", "/category", "/recipe_detail","/my_recipes",
-                    "/css/**", "/images/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-                
+              .requestMatchers(
+                "/", "/login", "/signup", "/checkUserId",
+                "/boardlist_read", "/boardlist_write", "/boardlist",
+                "/registration", "/category", "/recipe_detail",
+                "/adminboard2", "/adminboard2/delete",
+                "/admincomment2", "/admincomment2/delete", "/admincategory", "/top2",
+                "/css/**", "/images/**","/addressSearchPopup","/searchAddress"
+              ).permitAll()
+              .anyRequest().authenticated()
             )
             // 일반 로그인 설정
             .formLogin(form -> form
                 .loginPage("/login")                 // 커스텀 로그인 페이지
                 .loginProcessingUrl("/login")       // POST 요청 처리 URL
-                .defaultSuccessUrl("/home", true)   // 로그인 성공 시 이동
+                .successHandler((request, response, authentication) -> {
+                    // admin 계정 체크
+                    if ("admin".equals(authentication.getName())) {
+                        response.sendRedirect("/admincategory");
+                    } else {
+                        response.sendRedirect("/main");
+                    }
+                })
                 .failureUrl("/login?error")         // 로그인 실패 시 이동
                 .permitAll()
             )
@@ -56,7 +66,7 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                .defaultSuccessUrl("/home", true)
+                .defaultSuccessUrl("/main", true)
             )
             // 로그아웃 설정
             .logout(logout -> logout

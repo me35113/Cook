@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원정보 수정</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/logintop.css">
+</head>
+<body>
+<div class="top-bar">
+    <div class="logo">
+        <img src="/images/logo.jpg" alt="요리조리 로고" width="300">
+    </div>
+</div>
+
+<form th:action="@{/editProfileSubmit}" method="post" enctype="multipart/form-data" th:object="${member}">
+    <table border="1" cellpadding="5" cellspacing="0" style="width: 500px; margin: 0 auto;">
+        <tr>
+            <th>이름</th>
+            <td><input type="text" th:field="*{name}" required /></td>
+        </tr>
+        <tr>
+            <th>이메일</th>
+            <td><input type="email" th:field="*{email}" required /></td>
+        </tr>
+<tr>
+    <th>프로필 이미지</th>
+    <td>
+        <input type="file" id="profileImageInput" name="profileImage" accept="image/*" />
+        <input type="hidden" th:field="*{profile}" />
+        <br>
+        <img id="previewImage" 
+             th:src="@{${member.profile} != null ? '/images/' + ${member.profile} : ''}" 
+             alt="미리보기" 
+             style="max-width:100px; max-height:100px; display: block;" />
+    </td>
+</tr>
+
+        <tr>
+            <th>자기소개</th>
+            <td><textarea th:field="*{intro}" rows="3" cols="30"></textarea></td>
+        </tr>
+        <tr>
+            <th>알레르기</th>
+            <td><input type="text" th:field="*{allergy}" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center;">
+                <button type="submit">수정 완료</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+  const input = document.getElementById('profileImageInput');
+  const preview = document.getElementById('previewImage');
+  const previewNoTh = document.getElementById('previewImageNoTh');
+
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      // 기존 이미지 태그가 있으면 보여주고, 없으면 숨김 해제
+      if (preview) {
+        preview.src = event.target.result;
+        preview.style.display = 'inline-block';
+      } 
+      if (previewNoTh) {
+        previewNoTh.src = event.target.result;
+        previewNoTh.style.display = 'inline-block';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+</script>
+
+</body>
+</html>

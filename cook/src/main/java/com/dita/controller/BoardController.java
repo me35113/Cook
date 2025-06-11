@@ -4,6 +4,7 @@ import com.dita.domain.Board;
 import com.dita.domain.Report;
 import com.dita.persistence.ReportRepository;
 import com.dita.service.BoardService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class BoardController {
     // 글 작성 처리
     @PostMapping("/boardlist_write")
     public String writeSubmit(@ModelAttribute Board board) {
-        board.setUserId("1111"); // ← 고정된 member.user_id 값
+        board.setUserId("1111"); // 고정된 member.user_id (테스트용)
         boardService.saveBoard(board);
         return "redirect:/boardlist";
     }
@@ -56,18 +57,22 @@ public class BoardController {
     // 🚨 신고 처리
     @PostMapping("/report_proc")
     @ResponseBody
-    public ResponseEntity<String> reportSubmit(@RequestParam("board_id") Long boardId,
-                                               @RequestParam("type") String type,
-                                               @RequestParam("title") String title,
-                                               @RequestParam(value = "detail", required = false) String detail) {
+    public ResponseEntity<String> reportSubmit(
+            @RequestParam("board_id") Long boardId,
+            @RequestParam("type") String type,
+            @RequestParam("title") String title,
+            @RequestParam(value = "detail", required = false) String detail) {
+
         Report report = new Report();
-        report.setRecipeId(boardId);  // board_id를 recipe_id 컬럼에 저장
+        report.setRecipeId(boardId); // board_id → report 테이블의 recipe_id 컬럼
         report.setType(type);
         report.setTitle(title);
         report.setDetail((detail != null && !detail.trim().isEmpty()) ? detail : null);
+
         reportRepository.save(report);
+
         return ResponseEntity.status(HttpStatus.FOUND)
-                             .header("Location", "/boardlist")
-                             .build();
+                .header("Location", "/boardlist")
+                .build();
     }
 }

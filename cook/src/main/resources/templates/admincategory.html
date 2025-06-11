@@ -1,0 +1,313 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카테고리</title>
+<link rel="stylesheet" type="text/css" href="css/category.css">
+<style>
+/* 추가 스타일 */
+.admin-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-left: 50px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.select-controls {
+    display: flex;
+    align-items: center;
+    margin-top: 70px;
+    margin-right: 100px;
+    gap: 10px;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.delete-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.recipe-checkbox {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    width: 18px;
+    height: 18px;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.recipe-card {
+    position: relative;
+}
+
+.recipe-card.selected {
+    border: 2px solid #007bff;
+    background-color: #f8f9ff;
+}
+
+.select-all-checkbox {
+    margin-right: 5px;
+}
+</style>
+</head>
+<body>
+  <!-- 상단 프래그먼트 -->
+    <div th:replace="top2 :: top2Fragment"></div>
+
+    <!-- 관리자 컨트롤 영역 -->
+    <div class="admin-controls">
+        <div class="select-controls">
+            <span id="selectedCount">선택된 항목: 0개</span>
+        </div>
+        <div class="select-controls">
+            <label>
+                <input type="checkbox" id="selectAllCheckbox" class="select-all-checkbox">
+                전체 선택
+            </label>
+            <button type="button" id="deleteSelectedBtn" class="delete-button" disabled>
+                선택 항목 삭제
+            </button>
+        </div>
+    </div>
+
+	<div class="recipe-count">
+		총 <strong th:text="${totalCount}"></strong>개의 레시피가 있습니다.
+	</div>
+
+	<div class="recipe-grid">
+
+		<!-- 조건에 맞는 레시피가 없을 경우 -->
+		<div th:if="${#lists.isEmpty(recipes)}">
+			<p>해당 조건에 맞는 레시피가 없습니다.</p>
+		</div>
+
+		<!-- 레시피 목록 출력 -->
+		<div class="recipe-card" th:each="recipe : ${recipes}"
+			th:data-recipe-id="${recipe.recipeId}">
+			
+			<!-- 체크박스 -->
+			<input type="checkbox" class="recipe-checkbox" 
+				th:value="${recipe.recipeId}"
+				onclick="event.stopPropagation();">
+			
+			<a th:href="@{/recipe_detail(recipe_id=${recipe.recipeId})}"
+				onclick="return !event.target.closest('.recipe-checkbox');"> 
+			<div class="recipe-thumbnail">
+				<img
+					th:src="@{/upload/complete_img/{file}(file=${recipe.completionUrl})}"
+					alt="썸네일">
+			</div>
+			<div class="recipe-title" style="font-size: 16px;"
+				th:text="${recipe.title}">레시피 제목</div>
+			<div class="recipe-meta">
+				<h4 style="font-size: 14px;" th:text="${recipe.userId}">작성자</h4>
+				<span class="heart">❤</span> <font color="red"
+					th:text="${likeCounts[recipe.recipeId]}"></font> &nbsp;&nbsp;&nbsp;
+				조회수 <span
+					th:text="${recipe.views}"></span>
+			</div>
+			</a>
+		</div>
+	</div>
+
+	<!-- PREV -->
+	<div>
+	<ul class="pagination">
+		<!-- PREV -->
+		<li class="page-item" th:if="${result.prevPage}">
+			<a th:href="@{/category(
+				page=${result.prevPage.pageNumber + 1},
+				type=${param.type},
+				food_group_id=${param.food_group_id},
+				country=${param.country}
+			)}">PREV</a>
+		</li>
+
+		<!-- 페이지 번호 -->
+		<li class="page-item" th:each="p : ${result.pageList}"
+			th:classappend="${p.pageNumber + 1 == result.currentPageNum} ? 'active' : ''">
+			<a th:href="@{/category(
+				page=${p.pageNumber + 1},
+				type=${param.type},
+				food_group_id=${param.food_group_id},
+				country=${param.country}
+			)}">[[${p.pageNumber + 1}]]</a>
+		</li>
+
+		<!-- NEXT -->
+		<li class="page-item" th:if="${result.nextPage}">
+			<a th:href="@{/category(
+				page=${result.nextPage.pageNumber + 1},
+				type=${param.type},
+				food_group_id=${param.food_group_id},
+				country=${param.country}
+			)}">NEXT</a>
+		</li>
+	</ul>
+</div>
+
+	<script>
+  // 브라우저의 뒤로가기/앞으로가기 시 발생하는 이벤트 감지
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (window.performance && performance.navigation.type === 2)) {
+      // 뒤로가기(persisted = true) 또는 history navigation(type 2)이면 강제 새로고침
+      window.location.reload();
+    }
+  });
+
+// ////////// 체크박스 필터링 /////////
+function applyFilter() {
+    document.getElementById('filterForm').submit();
+}
+
+// ////////// 삭제 기능 관련 스크립트 /////////
+
+// 전체 선택 체크박스
+const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+const recipeCheckboxes = document.querySelectorAll('.recipe-checkbox');
+const deleteButton = document.getElementById('deleteSelectedBtn');
+const selectedCountSpan = document.getElementById('selectedCount');
+
+// 전체 선택/해제
+selectAllCheckbox.addEventListener('change', function() {
+    const isChecked = this.checked;
+    const currentCheckboxes = document.querySelectorAll('.recipe-checkbox'); // 현재 남아있는 체크박스들
+    currentCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        updateCardSelection(checkbox);
+    });
+    updateUI();
+});
+
+// 개별 체크박스 이벤트 (동적으로 추가된 요소도 처리)
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('recipe-checkbox')) {
+        updateCardSelection(e.target);
+        updateSelectAllState();
+        updateUI();
+    }
+});
+
+// 카드 선택 상태 업데이트
+function updateCardSelection(checkbox) {
+    const card = checkbox.closest('.recipe-card');
+    if (checkbox.checked) {
+        card.classList.add('selected');
+    } else {
+        card.classList.remove('selected');
+    }
+}
+
+// 전체 선택 체크박스 상태 업데이트
+function updateSelectAllState() {
+    const currentCheckboxes = document.querySelectorAll('.recipe-checkbox'); // 현재 남아있는 체크박스들
+    const checkedCount = document.querySelectorAll('.recipe-checkbox:checked').length;
+    const totalCount = currentCheckboxes.length;
+    
+    if (checkedCount === 0) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = false;
+    } else if (checkedCount === totalCount) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = true;
+    } else {
+        selectAllCheckbox.indeterminate = true;
+        selectAllCheckbox.checked = false;
+    }
+}
+
+// UI 업데이트 (선택 개수, 삭제 버튼 활성화)
+function updateUI() {
+    const checkedCount = document.querySelectorAll('.recipe-checkbox:checked').length;
+    selectedCountSpan.textContent = `선택된 항목: ${checkedCount}개`;
+    deleteButton.disabled = checkedCount === 0;
+}
+
+// 삭제 버튼 클릭 이벤트
+deleteButton.addEventListener('click', function() {
+    const checkedCheckboxes = document.querySelectorAll('.recipe-checkbox:checked');
+    
+    if (checkedCheckboxes.length === 0) {
+        alert('삭제할 레시피를 선택해주세요.');
+        return;
+    }
+    
+    const recipeIds = [];
+    checkedCheckboxes.forEach(checkbox => {
+        recipeIds.push(checkbox.value);
+    });
+    
+    const confirmMessage = `선택된 ${recipeIds.length}개의 레시피를 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.`;
+    
+    if (confirm(confirmMessage)) {
+        deleteRecipes(recipeIds);
+    }
+});
+
+// 레시피 삭제 함수 (화면에서만 제거)
+function deleteRecipes(recipeIds) {
+    // 화면에서 선택된 카드들을 제거
+    const checkedCheckboxes = document.querySelectorAll('.recipe-checkbox:checked');
+    
+    checkedCheckboxes.forEach(checkbox => {
+        const card = checkbox.closest('.recipe-card');
+        // 페이드 아웃 효과
+        card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.8)';
+        
+        // 애니메이션 완료 후 제거
+        setTimeout(() => {
+            card.remove();
+        }, 300);
+    });
+    
+    // UI 업데이트
+    setTimeout(() => {
+        // 체크박스 목록 다시 가져오기 (삭제된 것들 제외)
+        const remainingCheckboxes = document.querySelectorAll('.recipe-checkbox');
+        
+        // 전체 선택 체크박스 상태 초기화
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+        
+        // 선택 개수 업데이트
+        selectedCountSpan.textContent = '선택된 항목: 0개';
+        deleteButton.disabled = true;
+        
+        // 총 개수 업데이트
+        const totalCountElement = document.querySelector('.recipe-count strong');
+        const currentCount = parseInt(totalCountElement.textContent);
+        const newCount = currentCount - recipeIds.length;
+        totalCountElement.textContent = newCount;
+        
+        alert(`${recipeIds.length}개의 레시피가 삭제되었습니다.`);
+    }, 350);
+}
+
+// 초기 UI 상태 설정
+updateUI();
+</script>
+
+</body>
+</html>

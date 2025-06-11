@@ -14,25 +14,21 @@
 .left-panel {
     width: 13%;
     height: 100%;
-    background-color: red;
 }
 
 .center-panel {
     width: 74%;
     height: 100%;
     display: flex;
-    background-color: green;
 }
 
 .right-panel {
     width: 13%;
     height: 100%;
-    background-color: blue;
 }
 
 .page1{
 	width: 70%;
-	background-color: gray;
 	margin-right: 40px;
 }
 
@@ -55,7 +51,6 @@
 	
 	display: flex;
     flex-direction: column;
-    padding: 5px;
 }
 
 .myprofile-item {
@@ -71,25 +66,21 @@
 /* 각 패널별 스타일 */
 .item1 {
 	height: 50%;
-    background-color: #f8d7da;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid #A49177;
 }
 .item2 {
 	height: 12%;
-    background-color: #d1ecf1;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #A49177;
     font-size: 18px;     /* 텍스트 크기 증가 */
     font-weight: bold;   /* 텍스트 굵게 */
 }
 .item3 {
 	height: 8%;
-    background-color: #d4edda;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #A49177;
 }
 .item4 {
     height: 15%;
-    background-color: #fff3cd;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #A49177;
 
     display: flex;
     justify-content: center; /* 가로 중앙 정렬 */
@@ -99,7 +90,6 @@
 .sub-panel {
     width: 140px;
     height: 30px;
-    background-color: #ccc;
     display: flex;
     justify-content: center; /* 가로 중앙 정렬 */
     align-items: center;     /* 세로 중앙 정렬 */
@@ -109,7 +99,6 @@
 }
 .item5 {
     height: 15%;
-    background-color: #e2e3e5;
     display: flex;
     justify-content: center;  /* 가로 중앙 */
     align-items: center;      /* 세로 중앙 */
@@ -184,7 +173,6 @@
 .page1-3{
 	width: 100%;
 	height: 50px;
-	background-color: maroon;
 }
 
 /*  */
@@ -198,7 +186,6 @@
   .list {
     width: 100%;
     height: 90%;
-    background-color: red;
     margin-bottom: 20px; /* 버튼과 간격 */
     border-radius: 8px;
   }
@@ -227,3 +214,49 @@
     width: 24px;
     height: 18px;
   }
+  
+  /* 모달 배경 */
+.modal {
+  display: none; /* 기본은 숨김 */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* 모달 내부 박스 */
+.modal-content {
+  position: fixed; /* 화면 기준 위치로 설정 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 정 중앙 정렬 */
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 500px;
+  height:500px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+
+
+/* 닫기 버튼 */
+.close-btn {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+  

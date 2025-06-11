@@ -26,4 +26,8 @@ public interface RecipeSubRepository extends JpaRepository<RecipeSub, Long> {
     
     Page<RecipeSub> findByUserId(String userId, Pageable pageable);
     List<Recipe> findByRecipeIdIn(List<Long> recipeIds);
+    
+    Optional<RecipeSub> findTop1ByUserIdAndRecipeIdAndStateOrderByRecipeSubDateDesc(
+    	    String userId, Integer recipeId, int state);
+
 }

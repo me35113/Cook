@@ -24,9 +24,9 @@ public class Board {
     @Column(name = "user_id") // DB 컬럼명이 user_id인 경우
     private String userId;
 
-    @Column(name = "view_count") // DB 컬럼명은 snake_case지만, 필드명은 camelCase로
-    private int viewCount;
-
+    @Column(name = "view_count", nullable = false)
+    private int viewCount = 0;
+    
     @Column(name = "board_create")
     private LocalDateTime boardCreate;
 

@@ -83,8 +83,8 @@ body {
 }
 
 .filter-box input[type="checkbox"]:checked {
-  background-color: #d94c4c;
-  border-color: #d94c4c;
+  background-color: #1A15A8;
+  border-color: #1A15A8;
 }
 
 .filter-box input[type="checkbox"]:checked::after {
@@ -124,7 +124,7 @@ body {
 }
 
 .recipe-card:hover {
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .recipe-thumbnail {

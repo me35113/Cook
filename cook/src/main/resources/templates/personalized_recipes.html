@@ -28,7 +28,7 @@
 
     <!-- 이미지 -->
     <div style="height: 150px; overflow: hidden;">
-      <img th:src="@{/images/{img}(img=${recipe.completionUrl})}" alt="레시피 이미지"
+      <img th:src="@{/upload/complete_img/{img}(img=${recipe.completionUrl})}" alt="레시피 이미지"
            style="width: 100%; height: 100%; object-fit: cover;" />
     </div>
 
@@ -59,9 +59,9 @@
 </div>
 
 <!-- 페이지네이션 -->
-<div class="page1-3" th:if="${not #lists.isEmpty(recipes)}" style="margin-top: 20px;">
+<div class="page1-3" th:if="${not #lists.isEmpty(recipes)}" style="margin-top: 20px; border: 1px solid #ddd;">
   <nav aria-label="Page navigation">
-    <div style="display: flex; justify-content: space-between; align-items: center; text-align: center; height: 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; text-align: center; height: 40px; width: 100%;">
 
       <!-- 이전 -->
       <div style="width: 10%; display: flex; justify-content: center;">
@@ -105,26 +105,138 @@
 
         		</div>
         	</div>
-        	<div class="page2">
-        		<div class="myprofile">
-				    <div class="myprofile-item item1">패널 1</div>
-				    <div class="myprofile-item item2">닉네임</div>
-				    <div class="myprofile-item item3">설명</div>
-				    <div class="myprofile-item item4">
-				        <div class="sub-panel">1</div>
-   						<div class="sub-panel">2</div>
-				    </div>
-				    <div class="myprofile-item item5">
-				    	<div class="edit-button" onclick="/* 프로필 편집 액션 함수 호출 */">프로필 편집</div>
-				    </div>
-        		</div>
-        	</div>
+<div class="page2">
+    <div class="myprofile">
+        <!-- 프로필 이미지 -->
+        <div class="myprofile-item item1">
+            <img th:src="@{'/images/' + ${member.profile}}" alt="프로필 이미지" class="profile-image" />
+        </div>
+
+        <!-- 닉네임 + 아이디 -->
+        <div class="myprofile-item item2" th:if="${member != null}">
+            <p><span th:text="${member.name} + '(' + ${currentUserId} + ')'"></span></p>
+        </div>
+        <div class="myprofile-item item2" th:if="${member == null}">
+            <p>회원 정보를 불러올 수 없습니다.</p>
+        </div>
+
+        <!-- 한줄 소개 -->
+        <div class="myprofile-item item3" th:if="${member != null}">
+            <p><span th:text="${member.intro}"></span></p>
+        </div>
+
+        <!-- 구독/구독자 패널 -->
+        <div class="myprofile-item item4">
+<!-- 모달 열기 버튼 -->
+<div id="openModalBtn" class="sub-panel" style="cursor: pointer;">
+  구독 <span th:text="${subscribeCount}" style="margin-left: 15px;">0</span>
+</div>
+
+<!-- 모달 전체 구조 -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>내가 구독한 사용자 목록</h2>
+<div id="subscribed-user-list" style="display: flex; flex-direction: column; gap: 15px;"></div>
+
+  </div>
+</div>
+
+
+
+<div class="sub-panel">구독자 <span th:text="${subscribedCount}" style="margin-left: 15px;">0</span></div>
+        </div>
+
+        <!-- 프로필 편집 -->
+        <div class="myprofile-item item5">
+            <div class="edit-button" onclick="location.href='/edit_profile'">프로필 편집</div>
+        </div>
+    </div>
+    <button type="button" 
+        style="
+          padding: 10px 25px; 
+          font-size: 14px; 
+          cursor: pointer; 
+          align-self: flex-start; 
+          margin-left: 30px; 
+          margin-top: 10px;
+          background-color: #1A15A8; 
+          color: white;
+          border: none; 
+          border-radius: 5px;
+          transition: background-color 0.3s ease;
+        "
+        onmouseover="this.style.backgroundColor='#131174';"
+        onmouseout="this.style.backgroundColor='#1A15A8';"
+        onclick="location.href='/ingredients_add'">
+  재료 추가
+</button>
+</div>
+
         </div>
         <!-- 메인 패널 끝 -->
         <div class="right-panel"></div>
     </div>
 
     <div th:replace="bottom :: bottomFragment"></div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("myModal");
+  const openBtn = document.getElementById("openModalBtn");
+  const closeBtn = modal.querySelector(".close-btn");
+  const userListDiv = document.getElementById("subscribed-user-list");
 
+  openBtn.addEventListener("click", () => {
+    modal.style.display = "block";
+
+    // 구독 리스트 불러오기
+    fetch('/subscribed-users')
+      .then(res => res.json())
+      .then(users => {
+        userListDiv.innerHTML = ""; // 기존 내용 지우기
+        if (users.length === 0) {
+          userListDiv.innerHTML = "<p>구독한 사용자가 없습니다.</p>";
+        } else {
+          users.forEach(user => {
+            const panel = document.createElement("div");
+            panel.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #ddd; padding: 10px 0;";
+
+            panel.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="/images/${user.profile}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                <span>${user.name} (${user.userId})</span>
+              </div>
+              <button class="toggle-sub-btn" data-userid="${user.userId}" style="padding: 6px 12px;">구독취소</button>
+            `;
+
+            userListDiv.appendChild(panel);
+          });
+
+          // 버튼 이벤트 연결
+          document.querySelectorAll(".toggle-sub-btn").forEach(btn => {
+            btn.addEventListener("click", function() {
+              const subedUser = this.dataset.userid;
+              fetch(`/toggle-subscription?subedUser=${subedUser}`, { method: 'POST' })
+                .then(res => res.text())
+                .then(text => {
+                  this.textContent = text; // '구독' 또는 '구독취소'
+                });
+            });
+          });
+        }
+      });
+  });
+
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  window.addEventListener("click", e => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+});
+</script>
 </body>
 </html>

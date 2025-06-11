@@ -33,7 +33,7 @@ public class RecipeSub {
     private Integer state;
     
     @Column(name = "recipe_sub_date")
-    private LocalDateTime recipesubDate;
+    private LocalDateTime recipeSubDate;
     
     
 }

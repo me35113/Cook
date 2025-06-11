@@ -1,0 +1,108 @@
+body {
+    background-color: #f9f9f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.wrapper {
+    padding: 40px 100px;
+    min-height: 100vh;
+}
+
+.board-container {
+    background-color: white;
+    padding: 30px 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.board-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #D94C4C;
+}
+
+.board-search {
+    display: flex;
+}
+
+.board-search input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px 0 0 6px;
+    width: 220px;
+    font-size: 14px;
+}
+
+.board-search button {
+    background-color: #D94C4C;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+
+thead {
+    background-color: #f0f0f0;
+}
+
+th, td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+td.title {
+    text-align: left;
+}
+
+td a {
+    color: #333;
+    text-decoration: none;
+}
+
+td a:hover {
+    color: #D94C4C;
+    text-decoration: underline;
+}
+
+.pagination {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+.write-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.write-button button {
+    background-color: #D94C4C;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.write-button button:hover {
+    background-color: #c03f3f;
+}

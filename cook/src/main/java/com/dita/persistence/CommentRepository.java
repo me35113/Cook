@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dita.domain.Comment;
 
-public interface CommentRepository extends JpaRepository<Comment, Integer> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 	
 	// 특정 레시피의 댓글 목록 (최신순)
     List<Comment> findByRecipeIdOrderByCommentCreateDesc(Integer recipeId);

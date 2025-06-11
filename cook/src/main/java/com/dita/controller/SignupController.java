@@ -66,7 +66,7 @@ public class SignupController {
 
     // 직접 로그인 처리 메서드는 삭제 (Spring Security가 처리)
 
-    @GetMapping("/main")
+    /*@GetMapping("/main")
     public String main(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -79,6 +79,17 @@ public class SignupController {
         model.addAttribute("userId", userId);
 
         return "main";
+    }*/
+    
+    // 관리자 페이지 매핑 추가
+    @GetMapping("/admin")
+    public String adminPage(HttpSession session, Model model) {
+        // 관리자 권한 체크
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (isAdmin == null || !isAdmin) {
+            return "redirect:/login";
+        }
+        return "top2"; // top2.html 템플릿 반환
     }
 
     @GetMapping("/checkUserId")

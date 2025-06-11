@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 신고 목록</title>
+    <style>
+        .report-title {
+            text-align: center;
+            font-size: 24px;
+            margin: 160px 0 30px;
+            font-weight: bold;
+            color: navy;
+            letter-spacing: 2px;
+        }
+
+        .report-table {
+            width: 90%;
+            margin: auto;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .report-table th {
+            background-color: #f8f8f8;
+            border-top: 2px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 12px;
+        }
+
+        .report-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .report-table .content-row td {
+            text-align: left;
+            padding: 20px;
+            background-color: #fcfcfc;
+            color: #444;
+            font-size: 14px;
+        }
+
+        .report-table tr:hover:not(.content-row) {
+            background-color: #fdf1f1;
+        }
+
+        .btn-area {
+            text-align: center;
+            margin: 30px 0 60px;
+        }
+
+        .btn-area button {
+            padding: 6px 20px;
+            margin: 0 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background-color: navy;
+            color: white;
+            border: none;
+        }
+
+        .btn-write {
+            background-color: white;
+            border: 1px solid navy;
+            color: navy;
+        }
+    </style>
+</head>
+<script>
+    function toggleAll(source) {
+        const checkboxes = document.getElementsByName("board_ids");
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+
+    function confirmDelete() {
+        const checked = document.querySelectorAll('input[name="board_ids"]:checked');
+        if (checked.length === 0) {
+            alert("삭제할 게시글을 선택하세요.");
+            return false;
+        }
+        return confirm("정말 삭제하시겠습니까?");
+    }
+</script>
+<body>
+<!-- 상단 프래그먼트 -->
+    <div th:replace="top2 :: top2Fragment"></div>
+    <div class="report-title">게시판 신고 목록</div>
+
+    <form th:action="@{/adminboard2/delete}" method="post" onsubmit="return confirmDelete();">
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" onclick="toggleAll(this)"></th>
+                    <th>#</th>
+                    <th>Recipe ID</th>
+                    <th>Type</th>
+                    <th>Title</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${reports}">
+                    <td><input type="checkbox" name="board_ids" th:value="${r.reportId}"></td>
+                    <td th:text="${r.reportId}">1</td>
+                    <td th:text="${r.recipeId}">101</td>
+                    <td th:text="${r.type}">부적절</td>
+                    <td th:text="${r.title}">제목</td>
+                    <td th:text="${r.detail}">상세내용</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="btn-area">
+            <button type="submit" class="btn-delete">삭제</button>
+           
+        </div>
+    </form>
+</body>
+</html>

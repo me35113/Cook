@@ -1,0 +1,161 @@
+/* Reset & 기본 스타일 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #2C3E50;
+}
+
+body {
+  background-color: #f0f4f8;
+  line-height: 1.6;
+}
+
+.wrapper {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+/* 섹션 제목 */
+section h2 {
+  font-size: 2rem;
+  background-color: #2C3E50;
+  color: #fff;
+  padding: 14px 20px;
+  border-left: 8px solid #2980B9;
+  border-radius: 6px;
+  margin-bottom: 30px;
+}
+
+/* 레시피 리스트 */
+.recipe-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: flex-start;
+}
+
+/* 레시피 아이템 */
+.recipe-item {
+  width: calc(25% - 20px);
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.recipe-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 18px rgba(41,128,185,0.25);
+}
+
+.recipe-item img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.recipe-item p {
+  padding: 16px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #34495E;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 쉐프 소개 */
+.member-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.member-item {
+  width: 140px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  text-align: center;
+  padding: 18px 12px;
+  transition: box-shadow 0.3s ease;
+}
+
+.member-item:hover {
+  box-shadow: 0 8px 18px rgba(41,128,185,0.25);
+}
+
+.member-item img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 2px solid #2980B9;
+}
+
+.member-item p {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #2980B9;
+}
+
+/* 구독 버튼 */
+.member-item button {
+  background-color: #2980B9;
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.member-item button:hover {
+  background-color: #1f5f90;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .recipe-item {
+    width: calc(33.333% - 15px);
+  }
+}
+
+@media (max-width: 768px) {
+  .recipe-item {
+    width: calc(50% - 15px);
+  }
+
+  .wrapper {
+    margin: 30px auto;
+  }
+
+  section h2 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .recipe-item {
+    width: 100%;
+  }
+
+  section h2 {
+    font-size: 1.4rem;
+    padding: 10px 14px;
+  }
+}

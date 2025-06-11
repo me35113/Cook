@@ -1,17 +1,84 @@
-<!-- 예: home.html -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>홈</title>
+    <title>COOK&JOY</title>
+     <link rel="stylesheet" th:href="@{/css/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/top.css}" />
 </head>
 <body>
-    <h1>로그인 성공!</h1>
-    <p>홈 화면입니다.</p>
 
-    <form th:action="@{/logout}" method="post">
-        <button type="submit">로그아웃</button>
-    </form>
+    <!-- 상단 프래그먼트 -->
+    <div th:replace="top :: topFragment"></div>
+
+    <div class="wrapper">
+        <div class="container">
+
+            <!-- BEST 레시피 -->
+            <section>
+                <h2>BEST 레시피</h2>
+                <div class="recipe-list">
+                    <div th:each="recipe : ${bestList}" class="recipe-item">
+                        <a th:href="@{/recipe_detail(recipe_id=${recipe.recipeId})}">
+                            <img th:src="@{/upload/complete_img/{img}(img=${recipe.completionUrl})}" th:alt="${recipe.title}" />
+                            <p th:text="${recipe.title}">레시피 제목</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 최신 레시피 -->
+            <section>
+                <h2>최신 레시피</h2>
+                <div class="recipe-list">
+                    <div th:each="recipe : ${newList}" class="recipe-item">
+                        <a th:href="@{/recipe_detail(recipe_id=${recipe.recipeId})}">
+                            <img th:src="@{/upload/complete_img/{img}(img=${recipe.completionUrl})}" th:alt="${recipe.title}" />
+                            <p th:text="${recipe.title}">레시피 제목</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 오늘 뭐 먹지? -->
+            <section>
+                <h2>오늘 뭐 먹지?</h2>
+                <div class="recipe-list">
+                    <div th:each="recipe : ${randomList}" class="recipe-item">
+                        <a th:href="@{/recipe_detail(recipe_id=${recipe.recipeId})}">
+                            <img th:src="@{/upload/complete_img/{img}(img=${recipe.completionUrl})}" th:alt="${recipe.title}" />
+                            <p th:text="${recipe.title}">레시피 제목</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 쉐프 소개 -->
+            <section>
+    <h2>쉐프 소개</h2>
+    <div class="member-list">
+       <div th:each="member : ${memberList}" 
+     th:if="${loginId != null and member != null and member.userId != null and member.userId != loginId}" 
+     class="member-item">
+
+
+            <img th:src="@{/upload/{img}(img=${member.profile})}" th:alt="${member.name}" />
+            <p th:text="${member.name}">쉐프 이름</p>
+            <form th:action="@{/main}" method="post">
+                <input type="hidden" name="sub_user" th:value="${loginId}" />
+                <input type="hidden" name="subed_user" th:value="${member.userId}" />
+                <button type="submit" 
+                    th:text="(${member.subscribed} != null and ${member.subscribed}) ? '구독 해제' : '구독'">구독</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+        </div>
+    </div>
+
+    <!-- 하단 프래그먼트 -->
+    <div th:replace="bottom :: bottomFragment"></div>
+
 </body>
 </html>

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="topFragment">
 <head>
     <meta charset="UTF-8">
     <title>게시판 작성</title>
-    <link rel="stylesheet" href="/css/top.css">
+     <link rel="stylesheet" th:href="@{/css/top.css}">
+        <link rel="stylesheet" th:href="@{/css/board.css}"> <!-- ✅ board 전용 CSS 추가 -->
     <style>
+    
+    
         body {
             margin: 0;
             padding: 0;
@@ -13,6 +16,7 @@
             background-color: #fff;
             overflow-x: hidden;
         }
+        
         .form-container {
             max-width: 900px;
             margin: 0 auto 60px;
@@ -73,16 +77,8 @@
     </style>
 </head>
 <body>
-
+<div th:replace="top :: topFragment"></div>
 <div class="top-bar">
-    <div class="nav-menu">
-        <a href="/">홈</a>
-        <a href="/boardlist">게시판</a>
-        <a href="#">문의하기</a>
-    </div>
-    <div class="logo">
-        <img src="/images/logo.jpg" alt="로고">
-        요리조리
     </div>
 </div>
 

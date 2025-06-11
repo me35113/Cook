@@ -52,6 +52,7 @@ public class Recipe {
 	private Integer views;
 
 	@CreationTimestamp
+	@Column(name = "rec_date")
 	private Timestamp recDate;
 
 	@Column(name = "completion_url", columnDefinition = "TEXT")

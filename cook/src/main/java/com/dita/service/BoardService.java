@@ -2,7 +2,6 @@ package com.dita.service;
 
 import com.dita.domain.Board;
 import com.dita.persistence.BoardRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ public class BoardService {
     // 게시글 저장
     public void saveBoard(Board board) {
         board.setBoardCreate(LocalDateTime.now()); // 작성 시간 저장
-        board.setViewCount(0); // 조회수 초기화
-        boardRepository.save(board);
+        boardRepository.save(board); // viewCount는 Board.java에서 기본값 0 처리
     }
 }

@@ -56,7 +56,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 email = "kakao_" + providerId + "@socialuser.com";
             }
 
-            // ✅ 세션에 accessToken과 registrationId 저장
+            // 세션에 accessToken과 registrationId 저장
             HttpSession session = request.getSession();
             session.setAttribute("registrationId", registrationId);
             session.setAttribute("kakaoAccessToken", userRequest.getAccessToken().getTokenValue());
@@ -86,6 +86,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     newMember.setPwd(UUID.randomUUID().toString());
                     return memberRepository.save(newMember);
                 });
+
+        // 로그인 ID를 세션에 저장
+        HttpSession session = request.getSession();
+        session.setAttribute("loginId", finalEmail);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
