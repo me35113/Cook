@@ -36,7 +36,7 @@ public class ReplyController {
     @PostMapping("/reply/write")
     public String writeReply(
             Integer recipeId,
-            Integer commentId,
+            Long commentId,
             String reply,
             MultipartFile replyImage,
             HttpSession session,
